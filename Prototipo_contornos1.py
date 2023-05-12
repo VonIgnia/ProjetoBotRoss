@@ -17,7 +17,7 @@ if img_in is None:
 
 #Separando os canais de cor da imagem original
 [B,G,R] = cv2.split(img_in)
-(height,width) = B.shape
+(height,width) = B.shape 
         
 #returns,thresh=cv2.threshold(B,90,255,cv2.THRESH_BINARY_INV)
 returns,thresh=cv2.threshold(B,90,255,cv2.THRESH_BINARY)

@@ -1,0 +1,111 @@
+#bibliotecas necesárias para o socket
+import socket
+import time
+
+#bibliotecas necessárias para os contornos
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from math import *
+
+
+img_in = cv2.imread("shapes.jpg", cv2.IMREAD_COLOR)
+
+def Gera_contornos_V1(img_in):
+    if img_in is None:
+        print("File not found. Bye!")
+        exit(0)
+
+    #Separando os canais de cor da imagem original
+    [B,G,R] = cv2.split(img_in)
+
+    #será usadou futuramente para calibrar o tamanho dos desenhos
+    #(height,width) = B.shape 
+            
+    #returns,thresh=cv2.threshold(B,90,255,cv2.THRESH_BINARY_INV)
+    returns,thresh=cv2.threshold(B,90,255,cv2.THRESH_BINARY)
+
+    contours,hierachy=cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+
+    #outra forma de detectar contornos (utiliza de 2 thresholds e aparentemente detecta tanto bordas de subida quanto bordas de descida)
+    #Canny_edges = cv2.Canny(B,100,200)
+
+    img1_text = cv2.cvtColor(img_in,cv2.COLOR_BGR2RGB)
+
+    i=0
+    dict_contour_points = {}
+    for contour in contours:
+        i+=1
+
+        #numerar os contornos detectados
+        M = cv2.moments(contour)         
+        if M["m00"] != 0:
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+        
+        cv2.drawContours(img1_text,contour,-1,(0,255,255),3)
+        cv2.putText(img1_text, str(i), (cX,cY), cv2.FONT_HERSHEY_COMPLEX, 0.5, (255, 0, 0))
+        
+        #print ("Contorno", i, "Cx=", cX,"Cy=", cY)        
+        contour_points = []
+        
+        # o loop "for" a seguir tem como objetivo salvar os pontos de cada contorno detectado, 
+        # separadamente uns dos outros, assim permitindo chamar os contornos separadamente.
+        for point in contour:
+            contour_points.append(point[0]) #acrescenta o Z á lista de pontos que antes continha apenas informações de X e de Y
+            #print ("ponto",point[0], "do contorno:",i)
+        
+        dict_contour_points["Contorno{}".format(i)] = contour_points
+
+    #número de contornos detectados
+    #print (len(dict_contour_points))
+
+    #print (dict_contour_points["Contorno1"])
+
+    #plt.imshow(B, cmap='gray')
+    #plt.show()          
+
+    #plt.imshow(thresh, cmap='gray')
+    #plt.show() 
+
+    #plt.imshow(img1_text, cmap='gray')
+    #plt.show()          
+
+    Prototipo_lista_contornos = []
+
+    for i in dict_contour_points["Contorno1"]:
+        i = list(np.append(i,0))
+        Prototipo_lista_contornos.append(i)
+        #print (i)
+
+    return Prototipo_lista_contornos
+
+def Converter_formato_contornos_XYZ2seriesXYZ(lista, tam_max_comm):
+    lista = [[120,60,10],[60,120,0],[0,120,0],[0,0,0],[60,120,60]] #pontos em formato [[x1,y1,z1],[x2,y2,z2]...]
+
+    lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no contorno para não rabiscar entre contornos
+    lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no contorno para não rabiscar entre contornos
+
+    T = len(lista)
+
+    tam_max_comm = 2 #numero de pontos que serão passados a cada vez para o robo
+    cpi = 0 #indica o indice do ponto atual na lista T(current point index)
+
+    #enquanto o tamanho da lista que vai ser comunicada for menor do que o tamanho comunicável
+    #percorrer cada elemento da lista e adicionar às listas que serão comunicadas
+
+    while cpi < T:
+        #se o numero de pontos da lista que faltam ser comunicados forem menores do que o valor de pontos que serão comunicados
+        if T - cpi < tam_max_comm:
+            tam_max_comm = T-cpi #numero de pontos que serão passados a cada vez para o robo
+            
+        X = []
+        Y = []
+        Z = []
+        while len(Z) < tam_max_comm:
+            X.append(lista[cpi][0])
+            Y.append(lista[cpi][1])
+            Z.append(lista[cpi][2])
+            cpi+=1
+
+    return (tam_max_comm,X,Y,Z)

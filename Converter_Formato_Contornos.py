@@ -18,7 +18,6 @@ while cpi < T:
     #se o numero de pontos da lista que faltam ser comunicados forem menores do que o valor de pontos que serão comunicados
     if T - cpi < tam_max_comm:
         tam_max_comm = T-cpi #numero de pontos que serão passados a cada vez para o robo
-        
     X = []
     Y = []
     Z = []

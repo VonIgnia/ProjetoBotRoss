@@ -87,6 +87,4 @@ for i in dict_contour_points["Contorno1"]:
     Prototipo_lista_contornos.append(i)
     print (i)
 
-#print (len(Prototipo_lista_contornos))
-
-Prototipo_lista_contornos
+print (len(Prototipo_lista_contornos))

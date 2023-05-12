@@ -1,16 +1,13 @@
 import cv2
-import os
- 
+
 import numpy as np
 import matplotlib.pyplot as plt
-
-import pandas as pd # para desenhar/plotar as tabelas informando os status das peças em cada teste
 
 from math import *
 
 f = plt.figure(figsize=(10,5))
 
-img_in = cv2.imread("sonic_logo.jpg", cv2.IMREAD_COLOR)
+img_in = cv2.imread("shapes.jpg", cv2.IMREAD_COLOR)
 if img_in is None:
     print("File not found. Bye!")
     exit(0)

@@ -67,8 +67,6 @@ for contour in contours:
 print (len(dict_contour_points))
 
 print (dict_contour_points["Contorno1"])
-      
-
 
 plt.imshow(B, cmap='gray')
 plt.show()          
@@ -76,8 +74,8 @@ plt.show()
 plt.imshow(thresh, cmap='gray')
 plt.show() 
 
-plt.imshow(Canny_edges, cmap='gray')
-plt.show() 
+#plt.imshow(Canny_edges, cmap='gray')
+#plt.show() 
 
 #plt.imshow(thresh, cmap='gray')
 plt.imshow(img1_text, cmap='gray')
@@ -92,4 +90,6 @@ for i in dict_contour_points["Contorno1"]:
     Prototipo_lista_contornos.append(i)
     print (i)
 
-print (len(Prototipo_lista_contornos))
+#print (len(Prototipo_lista_contornos))
+
+Prototipo_lista_contornos

@@ -28,8 +28,8 @@ img_in = cv2.imread("shapes.jpg", cv2.IMREAD_COLOR)
 point_positions = Functions.Gera_contornos_V1(img_in)
 
 lista = point_positions
-lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no contorno para não rabiscar entre contornos
-lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no contorno para não rabiscar entre contornos
+lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
+lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
 
 T = len(lista)
 
@@ -38,11 +38,12 @@ cpi = 0 #indica o indice do ponto atual na lista T(current point index)
 
 #enquanto o tamanho da lista que vai ser comunicada for menor do que o tamanho comunicável
 #percorrer cada elemento da lista e adicionar às listas que serão comunicadas
+pontos_enviados = 0
 
-while cpi < T: #enquanto o indice do ponto atual for mentor que o compriomento total da lista de pontos
-    
+while pontos_enviados < T: #enquanto o indice do ponto atual for mentor que o compriomento total da lista de pontos
     if T - cpi < tam_max_comm: #se o numero de pontos da lista que faltam ser comunicados forem menores do que o valor de pontos que serão comunicados
         tam_max_comm = T-cpi   #numero de pontos que serão passados a cada vez para o robo
+    
     X = [] #X ,Y e Z irão conter t_max_comm coordenadas
     Y = []
     Z = []
@@ -52,19 +53,23 @@ while cpi < T: #enquanto o indice do ponto atual for mentor que o compriomento t
         Z.append(lista[cpi][2])
         cpi+=1
 
-    while (count < tam_max_comm):
-        try:
-            
-            c.send(str(tam_max_comm).encode('ascii')) #tamanho das listas X, Y e Z
 
-            time.sleep(2)
-            c.send(str(X).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
-            c.send(str(Y).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
-            c.send(str(Z).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
-            
-        except socket.error as socketerror:
-            print (count)
-        count += 1
+    time.sleep(5)
+
+    try:
+        c.send(str(tam_max_comm).encode('ascii')) #tamanho das listas X, Y e Z
+        print ("num_pontos", tam_max_comm)
+        c.send(str(X).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
+        print ("X", X)
+        c.send(str(Y).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
+        print ("Y", Y)
+        c.send(str(Z).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
+        print ("Z", Z)
+        
+    except socket.error as socketerror:
+        print (count)
+    pontos_enviados+=tam_max_comm
+    count += 1
 
     time.sleep(5)
 

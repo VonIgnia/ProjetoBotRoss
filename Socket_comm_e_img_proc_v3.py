@@ -24,8 +24,8 @@ while (connected == False):
         connected = True
         print("Connected")
 
-img_in = cv2.imread("sonic_logo.jpg", cv2.IMREAD_COLOR)
-point_positions = Functions.Gera_contornos_V1(img_in)
+img_in = cv2.imread("shapes.jpg", cv2.IMREAD_COLOR)
+point_positions = Functions.Gera_contornos_V2(img_in)
 
 lista = []
 linha = 0
@@ -46,7 +46,7 @@ lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no f
 
 T = len(lista)
 
-tam_max_comm = 4 #numero de pontos que serão passados a cada vez para o robo
+tam_max_comm = 10 #numero de pontos que serão passados a cada vez para o robo
 cpi = 0 #indica o indice do ponto atual na lista T(current point index)
 
 #enquanto o tamanho da lista que vai ser comunicada for menor do que o tamanho comunicável

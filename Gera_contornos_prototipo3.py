@@ -7,7 +7,7 @@ from math import *
 
 f = plt.figure(figsize=(10,5))
 
-img_in = cv2.imread("shapes.jpg", cv2.IMREAD_COLOR)
+img_in = cv2.imread("kirby.png", cv2.IMREAD_COLOR)
 if img_in is None:
     print("File not found. Bye!")
     exit(0)
@@ -16,13 +16,15 @@ if img_in is None:
 [B,G,R] = cv2.split(img_in)
 (height,width) = B.shape 
         
-#returns,thresh=cv2.threshold(B,90,255,cv2.THRESH_BINARY_INV)
-returns,thresh=cv2.threshold(B,90,255,cv2.THRESH_BINARY)
+#returns,thresh=cv2.threshold(img_in,90,255,cv2.THRESH_BINARY_INV)
+#returns,thresh=cv2.threshold(img_in,90,255,cv2.THRESH_BINARY)
 
-contours,hierachy=cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+
 
 #outra forma de detectar contornos (utiliza de 2 thresholds e aparentemente detecta tanto bordas de subida quanto bordas de descida)
 Canny_edges = cv2.Canny(B,100,200)
+contours,hierachy=cv2.findContours(Canny_edges,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+
 
 img1_text = cv2.cvtColor(img_in,cv2.COLOR_BGR2RGB)
 #img1_text = cv2.cvtColor(B,cv2.COLOR_GRAY2RGB)

@@ -31,17 +31,16 @@ lista = []
 linha = 0
 num_linhas = 10
 
-while linha<num_linhas:
-    lista.append([0,linha*5,0])
-    lista.append([180,linha*5,0])
-    lista.append([180,linha*5,60])
-    lista.append([0,linha*5,60])
-    linha+=1
-
-print (lista)
+#while linha<num_linhas:
+#    lista.append([0,linha*5,0])
+#    lista.append([180,linha*5,0])
+#    lista.append([180,linha*5,60])
+#    lista.append([0,linha*5,60])
+#    linha+=1
+#print (lista)
 
 #lista = [[0,0,0],[180,0,0],[180,5,0],[0,5,0],[0,10,0],[180,10,0]]
-#lista = point_positions
+lista = point_positions
 lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
 lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
 

@@ -24,8 +24,8 @@ while (connected == False):
         connected = True
         print("Connected")
 
-img_in = cv2.imread("shapes.jpg", cv2.IMREAD_COLOR)
-point_positions = Functions.Gera_contornos_V2(img_in)
+img_in = cv2.imread("kirby.png", cv2.IMREAD_COLOR)
+point_positions = Functions.Gera_contornos_V4(img_in)
 
 lista = []
 linha = 0

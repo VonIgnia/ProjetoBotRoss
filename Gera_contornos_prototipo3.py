@@ -17,17 +17,17 @@ if img_in is None:
 (height,width) = B.shape 
         
 #returns,thresh=cv2.threshold(img_in,90,255,cv2.THRESH_BINARY_INV)
-#returns,thresh=cv2.threshold(img_in,90,255,cv2.THRESH_BINARY)
-
-
+returns,thresh=cv2.threshold(B,90,255,cv2.THRESH_BINARY)
 
 #outra forma de detectar contornos (utiliza de 2 thresholds e aparentemente detecta tanto bordas de subida quanto bordas de descida)
 Canny_edges = cv2.Canny(B,100,200)
-contours,hierachy=cv2.findContours(Canny_edges,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+contours,hierachy=cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
 
 
 img1_text = cv2.cvtColor(img_in,cv2.COLOR_BGR2RGB)
 #img1_text = cv2.cvtColor(B,cv2.COLOR_GRAY2RGB)
+
+cv2.imshow('Image with Contours', thresh)
 
 
 i=0

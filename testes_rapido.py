@@ -1,14 +1,14 @@
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from math import *
 
-#teste_preenchimento1 linha a linha (estratégia zig de usinagem)
-lista = []
-linha = 0
-num_linhas = 10
+from Functions_splitted import Gera_Contornos
+from Functions_splitted import Gera_Lista_Pontos_Contorno
 
-while linha<num_linhas:
-    lista.append([0,linha*5,0])
-    lista.append([180,linha*5,0])
-    lista.append([180,linha*5,60])
-    lista.append([0,linha*5,60])
-    linha+=1
+img_in = cv2.imread("imgs_iniciais/novapizza.webp", cv2.IMREAD_COLOR)
 
-print (lista)
+contours = Gera_Contornos(img_in)
+
+pontos = Gera_Lista_Pontos_Contorno(img_in,contours)
+print (pontos)

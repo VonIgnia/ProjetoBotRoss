@@ -60,8 +60,6 @@ for i in range(initial,len(contours)):
                 print(i)
                 break
             contour_number += 1
-    
-
 
 # Display the image with contours
 cv2.imshow('Image with Contours', image)

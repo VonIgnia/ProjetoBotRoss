@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 
-img_in = cv2.imread("imgs_avancadas/perry.jpg", cv2.IMREAD_COLOR)
-#img_in = cv2.imread("imgs_avancadas\Lenna.png", cv2.IMREAD_COLOR)
+#img_in = cv2.imread("imgs_avancadas\Imagem1.png", cv2.IMREAD_COLOR)
+img_in = cv2.imread("imgs_avancadas\Lenna.png", cv2.IMREAD_COLOR)
 if img_in is None:
     print("File not found. Bye!")
     exit(0)
@@ -24,7 +24,7 @@ cv2.destroyAllWindows()
 
 
 #fornecer cores de canetas no formato (H[0-360], S([0-100], V[0-100])
-listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],[214, 94.3, 48.2],[326, 71.9, 57.3],[0,0,0],[24,91,63]]
+listaHSV_Cores_Canetas =  [[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],[214, 94.3, 48.2],[326, 71.9, 57.3],[0,0,0]]
 #listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],[214, 94.3, 64.7],[326, 71.9, 57.3],[240,80,25]]
 for cor in listaHSV_Cores_Canetas:
     cor[0] = int(np.clip((cor[0])/2,0,255))
@@ -38,13 +38,12 @@ for cor in listaHSV_Cores_Canetas:
 (height,width) = H.shape 
 
 H_out = np.zeros((height,width), dtype = "uint8")
-f1 = 1 #peso do h
+f1 = 7 #peso do h
 S_out = np.zeros((height,width), dtype = "uint8")
 f2 = 1 #peso do s
 V_out = np.zeros((height,width), dtype = "uint8")
 f3 = 1 #peso do v
 
-print('processando todos os pontos...')
 for i in range(height-1):
     for j in range(width-1):
         vci = [H[i,j],S[i,j],V[i,j]] #vetor cor imagem
@@ -58,7 +57,7 @@ for i in range(height-1):
         H_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][0]
         S_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][1]
         V_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][2]
-        #print(i,j)
+        print(i,j)
 
 hsv_img_out = cv2.merge((H_out,S_out,V_out))
 

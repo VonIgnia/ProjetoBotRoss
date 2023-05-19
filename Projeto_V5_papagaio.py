@@ -75,7 +75,7 @@ for i in range(height-1):
         H_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][0]
         S_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][1]
         V_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][2]
-        print(i,j)
+        #print(i,j)
 
 hsv_img_out = cv2.merge((H_out,S_out,V_out))
 

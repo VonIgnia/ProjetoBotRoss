@@ -170,18 +170,18 @@ def Gera_preenchimento_V2(imagem_binarizada,distancia_linha=10,grossura_linha=8)
 
         dict_filling_points["Preenchimento{}".format(i)] = filling_points
 
-        fill_line = []
+        
         dist=[]
         for element in filling_points:
             x_start = (point[0][0])
-            y_start = (point[0][1])
+            #y_start = (point[0][1])
 
             x_end = (element[0])
-            y_end = (element[1])
-            dist_from_start = sqrt((x_start - x_end)^2)
+            #y_end = (element[1])
+            dist_from_start = sqrt((x_start - x_end)**2)
             dist.append(dist_from_start)
-            print(dist_from_start)
-        max_dist = np.argmax(dist_from_start)
+            
+        max_dist = np.argmax(dist)
         print(dist)
         print(max_dist) 
 
@@ -198,8 +198,6 @@ def Gera_preenchimento_V2(imagem_binarizada,distancia_linha=10,grossura_linha=8)
                 i_atual = i
             Prototipo_lista_preenchimentos.append(j)
 
-
         Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60]))) #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
-
+    
     return Prototipo_lista_preenchimentos
-

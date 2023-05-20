@@ -17,7 +17,7 @@ if img_in is None:
 gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
 # Apply binary thresholding
 _, imagem_binarizada = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-point_positions = Functions.Gera_preenchimento_V2(imagem_binarizada,10,8)
+#point_positions = Functions.Gera_preenchimento_V2(imagem_binarizada,10,8)
 
 # Display the image with contours
 cv2.imshow('hsv', img_in)
@@ -79,9 +79,26 @@ for i in range(height-1):
 
 hsv_img_out = cv2.merge((H_out,S_out,V_out))
 
+#img_out = hsv_img_out
 img_out = cv2.cvtColor(hsv_img_out, cv2.COLOR_HSV2BGR)
 
 # Display the image with contours
 cv2.imshow('cores_finais', img_out)
 cv2.waitKey(0)
+#cv2.destroyAllWindows()
+
+#print((img_out[0,0]))
+
+for color in listaHSV_Cores_Canetas:
+
+    for i in range(height-1):
+        for j in range(width-1):
+            #print(hsv_img_out[i,j], "o", color)
+            if np.all(hsv_img_out[i,j] == color):
+                img_out[i,j] =  color
+            else:
+                img_out[i,j] = [0,0,0]
+    img_out = cv2.cvtColor(img_out, cv2.COLOR_HSV2BGR)
+    cv2.imshow(str(color), img_out)
+    cv2.waitKey(0)
 cv2.destroyAllWindows()

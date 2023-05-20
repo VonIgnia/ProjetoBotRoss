@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 
-def resize_keeping_aspect_ratio(image, tamanho_folha):
-    current_height, current_width = image.shape[:2]
+def resize_keeping_aspect_ratio(img_in, tamanho_folha):
+    current_height, current_width = img_in.shape[:2]
     width = tamanho_folha[0]
     height = tamanho_folha[1]
 
@@ -30,8 +30,14 @@ def resize_keeping_aspect_ratio(image, tamanho_folha):
         new_width = width
         new_height = int(current_height * ratio)
     
-    resized_image = cv2.resize(image, (new_width, new_height))
-    return resized_image
+    resized_img_in = cv2.resize(img_in, (new_width, new_height))
+    
+    #imagem que o robô irá desenhar:
+    #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically
+    #img_h = cv2.flip(hsv_img_in_norm, 1) # flip the image by horizontally
+    img_out = cv2.flip(resized_img_in,-1) # flip the image in both axis
+
+    return img_out
 
 def Gera_contornos_V3(img_in):
     if img_in is None:
@@ -186,7 +192,7 @@ def Gera_preenchimento_V2(imagem_binarizada,distancia_linha=10,grossura_linha=8)
         fill_line.append(filling_points[0])
         fill_line.append(filling_points[max_dist])
         
-        print(fill_line)
+        #print(fill_line)
 
         dict_filling_points["Preenchimento{}".format(i)] = fill_line 
 
@@ -204,5 +210,59 @@ def Gera_preenchimento_V2(imagem_binarizada,distancia_linha=10,grossura_linha=8)
             Prototipo_lista_preenchimentos.append(j)
 
         Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60]))) #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
-        #print (Prototipo_lista_preenchimentos)
+        print (Prototipo_lista_preenchimentos)
     return Prototipo_lista_preenchimentos
+
+def Simplifica_cores(img_in, listaHSV_Cores_disponiveis, kH = 1, kS = 1 , kV = 1):
+    
+    hsv_resized_image = cv2.cvtColor(img_in, cv2.COLOR_BGR2HSV)
+    [H,S,V] = cv2.split(hsv_resized_image)
+    (height,width) = H.shape
+
+    listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],[214, 94.3, 64.7],[326, 71.9, 57.3],[240,80,25]]
+    for cor in listaHSV_Cores_Canetas:
+        cor[0] = int(np.clip((cor[0])/2,0,255))
+        cor[1] = int(np.clip((cor[1]*255)/100,0,255))
+        cor[2] = int(np.clip((cor[2]*255)/100,0,255))
+    #print (listaHSV_Cores_Canetas)
+
+    H_out = np.zeros((height,width), dtype = "uint8")
+    S_out = np.zeros((height,width), dtype = "uint8")
+    V_out = np.zeros((height,width), dtype = "uint8")
+
+    for i in range(height-1):
+        for j in range(width-1):
+            vci = [H[i,j],S[i,j],V[i,j]] #vetor cor imagem
+            lista_dist_eclidiana = []
+            for vcc in listaHSV_Cores_Canetas: #vcc = vetor cor canetas
+
+                dist_euclidiana = sqrt(((vcc[0]-vci[0])**2)*kH + ((vcc[1]-vci[1])**2)*kS + ((vcc[2]-vci[2])**2)*kV)
+                lista_dist_eclidiana.append(dist_euclidiana)
+
+            min_dist_index = np.argmin(lista_dist_eclidiana)
+            H_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][0]
+            S_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][1]
+            V_out[i,j] = listaHSV_Cores_Canetas[min_dist_index][2]
+            #print(i,j)
+
+    hsv_img_out = cv2.merge((H_out,S_out,V_out))
+
+    return 0
+
+def Split_cores(img_in, lista_cores_disponiveis):
+    (height,width) = (img_in.shape[0], img_in.shape[1])
+    for color in lista_cores_disponiveis:
+
+        for i in range(height-1):
+            for j in range(width-1):
+                #print(hsv_img_out[i,j], "o", color)
+                if np.all(img_in[i,j] == color):
+                    img_out[i,j] =  color
+                else:
+                    img_out[i,j] = [0,0,0]
+        img_out = cv2.cvtColor(img_out, cv2.COLOR_HSV2BGR)
+        cv2.imshow(str(color), img_out)
+        cv2.waitKey(0)
+        return (img_out)
+
+    

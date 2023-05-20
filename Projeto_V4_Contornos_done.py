@@ -27,7 +27,7 @@ while (connected == False):
         connected = True
         print("Connected")
 
-img_in = cv2.imread("novapizza.webp", cv2.IMREAD_COLOR)
+img_in = cv2.imread("imgs_iniciais\shapes.jpg", cv2.IMREAD_COLOR)
 point_positions = Functions.Gera_contornos_V3(img_in)
 
 lista = []
@@ -59,7 +59,8 @@ pontos_enviados = 0
 while pontos_enviados < T: #enquanto o indice do ponto atual for mentor que o compriomento total da lista de pontos
     if T - cpi < tam_max_comm: #se o numero de pontos da lista que faltam ser comunicados forem menores do que o valor de pontos que serão comunicados
         tam_max_comm = T-cpi   #numero de pontos que serão passados a cada vez para o robo
-    
+        #lista.append(lista[-1])
+
     X = [] #X ,Y e Z irão conter t_max_comm coordenadas
     Y = []
     Z = []

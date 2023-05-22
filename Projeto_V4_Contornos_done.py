@@ -50,16 +50,26 @@ lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no f
 T = len(lista)
 
 tam_max_comm = 10 #numero de pontos que serão passados a cada vez para o robo
+
+n_appends = tam_max_comm - (T % tam_max_comm)
+print (n_appends)
+while n_appends != 0:
+    lista.append([0,0,0])
+    n_appends = n_appends-1
+
+T = len(lista)
+
 cpi = 0 #indica o indice do ponto atual na lista T(current point index)
 
 #enquanto o tamanho da lista que vai ser comunicada for menor do que o tamanho comunicável
 #percorrer cada elemento da lista e adicionar às listas que serão comunicadas
 pontos_enviados = 0
 
+print(lista)
+
 while pontos_enviados < T: #enquanto o indice do ponto atual for mentor que o compriomento total da lista de pontos
     if T - cpi < tam_max_comm: #se o numero de pontos da lista que faltam ser comunicados forem menores do que o valor de pontos que serão comunicados
         tam_max_comm = T-cpi   #numero de pontos que serão passados a cada vez para o robo
-        #lista.append(lista[-1])
 
     X = [] #X ,Y e Z irão conter t_max_comm coordenadas
     Y = []

@@ -98,7 +98,12 @@ for color in listaHSV_Cores_Canetas:
                 img_out[i,j] =  color
             else:
                 img_out[i,j] = [0,0,0]
+
     img_out = cv2.cvtColor(img_out, cv2.COLOR_HSV2BGR)
-    cv2.imshow(str(color), img_out)
+    gray2 =  cv2.cvtColor(img_out, cv2.COLOR_BGR2GRAY)
+    returns, thresh = cv2.threshold(gray2, 1, 255, cv2.THRESH_BINARY)
+
+    Functions.Gera_preenchimento_V2(thresh)
+    cv2.imshow(str(color), thresh)
     cv2.waitKey(0)
 cv2.destroyAllWindows()

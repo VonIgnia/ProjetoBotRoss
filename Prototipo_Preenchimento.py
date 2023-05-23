@@ -1,7 +1,7 @@
 
 import cv2
 import numpy as np
-
+import Functions
 image = cv2.imread('imgs_iniciais\kirby.png')
 
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -54,7 +54,9 @@ def preenchimento(imagem_binarizada,distancia_linha=10,grossura_linha=8):
             Prototipo_lista_preenchimentos.append(j)
 
         Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
-        #print(Prototipo_lista_preenchimentos)
+        print(Prototipo_lista_preenchimentos)
     return Prototipo_lista_preenchimentos
 
-preenchimento(imagem_binarizada,10,8)
+#preenchimento(imagem_binarizada,10,8)
+
+Functions.Gera_preenchimento_V3(imagem_binarizada,10,8)

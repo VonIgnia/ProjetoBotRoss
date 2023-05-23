@@ -28,7 +28,11 @@ while (connected == False):
         print("Connected")
 
 img_in = cv2.imread("imgs_iniciais\shapes.jpg", cv2.IMREAD_COLOR)
-point_positions = Functions.Gera_contornos_V3(img_in)
+
+A4_paisagem = (297,210) #dimensões em mm (width, height)
+resized = Functions.resize_keeping_aspect_ratio(img_in,A4_paisagem)
+
+point_positions = Functions.Gera_contornos_V3(resized)
 
 lista = []
 linha = 0

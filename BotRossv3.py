@@ -24,13 +24,13 @@ while (connected == False):
         connected = True
         print("Connected")
 
-img_in = cv2.imread("imgs_iniciais\kirby.png", cv2.IMREAD_COLOR)
+img_in = cv2.imread("imgs_iniciais\shapes.jpg", cv2.IMREAD_COLOR)
 #point_positions = Functions.Gera_contornos_V3(img_in)
 
 gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
 # Apply binary thresholding
 _, imagem_binarizada = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-point_positions = Functions.Gera_preenchimento_V2(imagem_binarizada,10,8)
+point_positions = Functions.Gera_preenchimento_V3(imagem_binarizada,10,8)
 
 
 lista = []

@@ -29,7 +29,7 @@ cv2.destroyAllWindows()
 A4_retrato = (297,210) #dimensões em mm (height, width)
 A4_paisagem = (210,297) #dimensões em mm (height, width)
 
-resized_image = Functions.resize_keeping_aspect_ratio(img_in,A4_paisagem)
+resized_image = Functions.resize_keeping_aspect_ratio(img_in,A4_retrato)
 cv2.imshow('Resized Image', resized_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

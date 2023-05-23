@@ -35,7 +35,10 @@ def resize_keeping_aspect_ratio(img_in, tamanho_folha):
     #imagem que o robô irá desenhar:
     #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically
     #img_h = cv2.flip(hsv_img_in_norm, 1) # flip the image by horizontally
-    img_out = cv2.flip(resized_img_in,-1) # flip the image in both axis
+    #img_vh = cv2.flip(resized_img_in,-1) # flip the image in both axis
+    
+    img_out = cv2.flip(resized_img_in, 1)
+    img_out = cv2.flip(img_out,-1)
 
     return img_out
 
@@ -210,8 +213,70 @@ def Gera_preenchimento_V2(imagem_binarizada,distancia_linha=10,grossura_linha=8)
             Prototipo_lista_preenchimentos.append(j)
 
         Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60]))) #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
-        print (Prototipo_lista_preenchimentos)
+        #print (Prototipo_lista_preenchimentos)
     return Prototipo_lista_preenchimentos
+
+def Gera_preenchimento_V3(imagem_binarizada,distancia_linha=10,grossura_linha=8):
+    # Display the binary image
+    #cv2.imshow('Binary Image', imagem_binarizada)
+    #cv2.waitKey(0)
+    
+    height, width = imagem_binarizada.shape[:2]
+    line_spacing = distancia_linha
+    line_thickness = grossura_linha
+
+    # Draw horizontal lines on the binary image
+    for y in range(0, height, line_spacing):
+        cv2.line(imagem_binarizada, (0, y), (width, y), 0, line_thickness)
+
+    # Display the binary image
+    #cv2.imshow('Masked Image', imagem_binarizada)
+    #cv2.waitKey(0)
+
+    # Find contours
+    contours, hierarchy = cv2.findContours(imagem_binarizada, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    i=0
+    dict_filling_points = {}
+    for contour in contours:
+        i+=1
+        filling_points = []
+        
+
+        x,y,w,h = cv2.boundingRect(contour)
+        filling_points.append([x,y])
+        filling_points.append([x+w,y])
+        
+        cv2.rectangle(imagem_binarizada,(x,y),(x+w,y+h),(255,255,255),5)
+        
+        #print (filling_points)
+        
+
+        #for point in contour:
+        #    filling_points.append(point[0])
+
+        dict_filling_points["Preenchimento{}".format(i)] = filling_points
+
+    Prototipo_lista_preenchimentos = []
+
+    i_atual = 0 #flag para checar se mudou de Contorno{numero do contorno} para Contorno{numero do contorno+1}
+    
+    for i in dict_filling_points: #para cada elemento(contorno(conjunto de pontos [x, y])) no dicionário
+        for j in dict_filling_points[i]: #para cada ponto[x, y] no contorno:
+
+            j = list(np.append(j,0)) # a lista só contém os valores de x e y, essa linha faz o append de um terceiro valor para representar o eixo z, esse valor sempre é 0
+            if i != i_atual: #se mudou de Contorno{numero do contorno} para Contorno{numero do contorno+1}
+                Prototipo_lista_preenchimentos.append(list(np.add(j,[0,0,60]))) #acrescenta movimento em Z no inicio do contorno para não rabiscar entre contornos
+                i_atual = i
+            Prototipo_lista_preenchimentos.append(j) #acrescenta o ponto [x,y,z] na lista
+        Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60]))) #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
+    
+    #cv2.imshow('Masked Image', imagem_binarizada)
+    #cv2.waitKey(0)
+    print (Prototipo_lista_preenchimentos)
+
+    return Prototipo_lista_preenchimentos
+
 
 def Simplifica_cores(img_in, listaHSV_Cores_disponiveis, kH = 1, kS = 1 , kV = 1):
     

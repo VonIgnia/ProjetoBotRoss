@@ -22,14 +22,13 @@ def resize_keeping_aspect_ratio(img_in, tamanho_folha):
     if width == 0:
         # Calculate the ratio based on the desired height
         ratio = height / float(current_height)
-        new_width = int(current_width * ratio)
-        new_height = height
+        
     else:
         # Calculate the ratio based on the desired width
         ratio = width / float(current_width)
-        new_width = width
-        new_height = int(current_height * ratio)
-    
+
+    new_width = int(current_width * ratio)
+    new_height = int(current_height * ratio)
     resized_img_in = cv2.resize(img_in, (new_width, new_height))
     
     #imagem que o robô irá desenhar:
@@ -276,6 +275,135 @@ def Gera_preenchimento_V3(imagem_binarizada,distancia_linha=10,grossura_linha=8)
     print (Prototipo_lista_preenchimentos)
 
     return Prototipo_lista_preenchimentos
+ 
+def Gera_preenchimento_V4(imagem_binarizada):
+    # Display the binary image
+    cv2.imshow('Binary Image', imagem_binarizada)
+
+    height, width = imagem_binarizada.shape[:2]
+    distancia_linha = 10
+    grossura_linha = 8
+
+
+    imagem_linha = np.zeros(((height, width)), dtype=np.uint8)
+    
+    
+    """
+    lista_pontos = []
+    for y in range(0, height, 5):
+        ultimo_pixel_branco = width+100
+        for x in range(0, width):
+            if imagem_binarizada[y,x] == 255:
+                imagem_linha[y,x] = 255
+                if(ultimo_pixel_branco+1) != x:
+                    #linha nova
+                    lista_pontos.append([y,x])
+                ultimo_pixel_branco = x
+            else: #nao é branco
+                if len(lista_pontos) == 0:
+                    #termino da linha anterior
+                    lista_pontos.append([y,x-1])
+    """
+
+    for y in range(0, height, 5):
+        for x in range(0, width):
+            if imagem_binarizada[y,x] == 255:
+                imagem_linha[y,x] = 255
+            else:
+                imagem_linha[y,x] = 0
+    
+    # Display the binary image
+    cv2.imshow('Masked Image', imagem_linha)
+
+    """
+    imagem_teste = np.zeros(((height, width)), dtype=np.uint8)
+    for i in range(0,len(lista_pontos),2):
+        try:
+            x1 = lista_pontos[i][1]
+            y1 = lista_pontos[i][0]
+            x2 = lista_pontos[i+1][1]
+            y2 = lista_pontos[i+1][0]
+            cv2.line(imagem_teste, (x1, y1), (x2, y2), 255)
+        except:
+            pass
+            
+
+     # Display the binary image
+    cv2.imshow('Resultado', imagem_teste)
+    """
+   
+    cv2.waitKey(0)
+
+def Gera_preenchimento_V5(imagem_binarizada):
+    # Display the binary image
+    #cv2.imshow('Binary Image', imagem_binarizada)
+
+    height, width = imagem_binarizada.shape[:2]
+    line_coordinates = []
+
+    for y in range(0, height, 15):
+        line_start = None  # Start coordinate of the current line
+        line_end = None  # End coordinate of the current line
+        for x in range(width):
+            if imagem_binarizada[y, x] == 255:
+                if line_start is None:
+                    line_start = (x, y)
+                line_end = (x, y)
+            elif line_start is not None:
+                # Store the start and end coordinates of the line segment in line_coordinates
+                line_coordinates.append((line_start, line_end))
+                line_start = None
+                line_end = None
+        # Check if the line segment extends till the end of the row
+        if line_start is not None and line_end is not None:
+            line_coordinates.append((line_start, line_end))
+
+
+    # Create a new blank black image to visualize the lines
+    output_image = np.zeros((height, width), dtype=np.uint8)
+
+    # Draw lines on the output image using the line coordinates
+    for start, end in line_coordinates:
+        cv2.line(output_image, start, end, 255, 1)
+
+
+    # Create a new list to store the line coordinates with z-coordinate
+    line_coordinates_3d = []
+
+    # Define the z-coordinate values
+    z_values = [20, 0, 0, 20]
+
+    # Iterate through the line_coordinates list and apply the steps to add z-coordinate
+    for i in range(len(line_coordinates)):
+        x_start, y_start = line_coordinates[i][0]
+        x_end, y_end = line_coordinates[i][1]
+        
+        # Step 1: Add the first coordinate with z = 20
+        line_coordinates_3d.append([x_start, y_start, z_values[0]])
+        
+        # Step 2: Repeat the same element with z = 0
+        line_coordinates_3d.append([x_start, y_start, z_values[1]])
+        
+        # Step 3: Add the next coordinate with z = 0
+        line_coordinates_3d.append([x_end, y_end, z_values[1]])
+        
+        # Step 4: Repeat the same element with z = 20
+        line_coordinates_3d.append([x_end, y_end, z_values[0]])
+
+
+    print(line_coordinates_3d)
+
+    #cv2.imshow('Output Image', output_image)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+
+    return line_coordinates_3d
+
+ 
+img_in = cv2.imread("imgs_iniciais\shapes.jpg", cv2.IMREAD_COLOR)
+gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
+_, imagem_binarizada = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+point_positions = Gera_preenchimento_V5(imagem_binarizada)
 
 
 def Simplifica_cores(img_in, listaHSV_Cores_disponiveis, kH = 1, kS = 1 , kV = 1):

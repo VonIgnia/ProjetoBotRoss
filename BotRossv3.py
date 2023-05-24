@@ -7,6 +7,15 @@ import cv2
 
 print ('Program Started')
 
+# Get the local host name
+myHostName = socket.gethostname()
+print("Name of the localhost is {}".format(myHostName))
+
+
+# Get the IP address of the local host
+myIP = socket.gethostbyname(myHostName)
+print("IP address of the localhost is {}".format(myIP))
+
 HOST = '10.103.16.140'
 PORT = 20000
 
@@ -25,12 +34,12 @@ while (connected == False):
         print("Connected")
 
 img_in = cv2.imread("imgs_iniciais\shapes.jpg", cv2.IMREAD_COLOR)
-#point_positions = Functions.Gera_contornos_V3(img_in)
+point_positions = Functions.Gera_contornos_V3(img_in)
 
-gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
+#gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
 # Apply binary thresholding
-_, imagem_binarizada = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-point_positions = Functions.Gera_preenchimento_V3(imagem_binarizada,10,8)
+#_, imagem_binarizada = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+#point_positions = Functions.Gera_preenchimento_V3(imagem_binarizada)
 
 
 lista = []
@@ -47,8 +56,8 @@ num_linhas = 10
 
 #lista = [[0,0,0],[180,0,0],[180,5,0],[0,5,0],[0,10,0],[180,10,0]]
 lista = point_positions
-lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
-lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
+#lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
+#lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
 
 T = len(lista)
 

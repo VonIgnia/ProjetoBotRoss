@@ -6,7 +6,7 @@ from math import *
 import Functions
 
 #img_in = cv2.imread("imgs_avancadas/Imagem1.png", cv2.IMREAD_COLOR)
-img_in = cv2.imread("imgs_avancadas/birb.jpeg", cv2.IMREAD_COLOR)
+img_in = cv2.imread("imgs_iniciais\kirby.png", cv2.IMREAD_COLOR)
 #img_in = cv2.imread("imgs_avancadas\Lenna.png", cv2.IMREAD_COLOR)
 if img_in is None:
     print("File not found. Bye!")

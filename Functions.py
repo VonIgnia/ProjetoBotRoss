@@ -24,7 +24,7 @@ def select_threshold(image,tipo_treshold=""):
     scale_factor = 500 / max_dim
 
     # Resize the image while preserving the aspect ratio
-    resized_image = cv2.resize(image, None, fx=scale_factor, fy=scale_factor)
+    resized_image = cv2.resize(image, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LANCZOS4)
 
     # Create a 500x500 frame
     frame = np.ones((500, 500), dtype=np.uint8) * 255
@@ -59,6 +59,8 @@ def Gera_contornos_Vf(img_in):
 
     treshold_value = select_threshold(img_in,"contorno")
 
+    img_in = cv2.GaussianBlur(img_in, (15, 15), 0)
+
     _, thresh = cv2.threshold(img_in, treshold_value, 255, cv2.THRESH_BINARY)
     
     # Find contours in the binary image
@@ -91,6 +93,8 @@ def Gera_preenchimento_Vf(img_in):
 
     treshold_value = select_threshold(img_in,"preenchiemento")
 
+    img_in = cv2.GaussianBlur(img_in, (15, 15), 0)
+    
     _, imagem_binarizada = cv2.threshold(img_in, treshold_value, 255, cv2.THRESH_BINARY_INV)
 
     height, width = imagem_binarizada.shape[:2]

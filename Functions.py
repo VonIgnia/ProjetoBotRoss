@@ -8,7 +8,61 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 
-def select_threshold(image,tipo_treshold=""):
+def adjust_gaussian_blur(image):
+    def on_trackbar(value):
+        # Get the current trackbar value
+        blur_amount = cv2.getTrackbarPos('Blur Amount', 'Adjust Gaussian Blur')
+
+        # Apply Gaussian blur to the image
+        blurred = cv2.GaussianBlur(frame, (blur_amount, blur_amount), 0)
+
+        # Show the blurred image
+        cv2.imshow('Adjust Gaussian Blur', blurred)
+
+        # Update the current blur value
+        global current_blur
+        current_blur = blur_amount
+
+    # Determine the maximum dimension of the image
+    max_dim = max(image.shape[0], image.shape[1])
+
+    # Calculate the scaling factor to fit within a 500x500 frame
+    scale_factor = 500 / max_dim
+
+    # Resize the image while preserving the aspect ratio
+    resized_image = cv2.resize(image, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LANCZOS4)
+
+    # Create a 500x500 frame
+    frame = np.ones((500, 500), dtype=np.uint8) * 255
+
+    # Calculate the coordinates to center the image
+    x_offset = (frame.shape[1] - resized_image.shape[1]) // 2
+    y_offset = (frame.shape[0] - resized_image.shape[0]) // 2
+
+    # Insert the resized image into the frame
+    frame[y_offset:y_offset+resized_image.shape[0], x_offset:x_offset+resized_image.shape[1]] = resized_image
+
+    # Create a window for displaying the adjusted image
+    cv2.namedWindow('Adjust Gaussian Blur')
+
+    # Create a trackbar for adjusting the blur amount
+    cv2.createTrackbar('Blur Amount', 'Adjust Gaussian Blur', 1, 30, on_trackbar)
+
+    # Initialize the trackbar position
+    cv2.setTrackbarPos('Blur Amount', 'Adjust Gaussian Blur', 0)
+
+    # Store the initial blur value
+    global current_blur
+    current_blur = 1
+
+    # Wait for a key press to exit
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # Return the current blur value
+    return current_blur
+
+def select_threshold(image):
     # Function to be called when the trackbar value changes
     def update_threshold(value):
         # Apply the threshold to obtain a binary image
@@ -36,8 +90,9 @@ def select_threshold(image,tipo_treshold=""):
     # Insert the resized image into the frame
     frame[y_offset:y_offset+resized_image.shape[0], x_offset:x_offset+resized_image.shape[1]] = resized_image
 
+
     # Create a window to display the thresholded image
-    nameWindow = "selecionar o valor do treshold para " + tipo_treshold
+    nameWindow = "Adjust Treshold "
     cv2.namedWindow(nameWindow)
 
     # Create a trackbar for the threshold value
@@ -57,11 +112,7 @@ def select_threshold(image,tipo_treshold=""):
 
 def Gera_contornos_Vf(img_in):
 
-    treshold_value = select_threshold(img_in,"contorno")
-
-    img_in = cv2.GaussianBlur(img_in, (15, 15), 0)
-
-    _, thresh = cv2.threshold(img_in, treshold_value, 255, cv2.THRESH_BINARY)
+    _, thresh = cv2.threshold(img_in, 170, 255, cv2.THRESH_BINARY)
     
     # Find contours in the binary image
     contours, _ = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
@@ -91,11 +142,7 @@ def Gera_contornos_Vf(img_in):
 
 def Gera_preenchimento_Vf(img_in):
 
-    treshold_value = select_threshold(img_in,"preenchiemento")
-
-    img_in = cv2.GaussianBlur(img_in, (15, 15), 0)
-    
-    _, imagem_binarizada = cv2.threshold(img_in, treshold_value, 255, cv2.THRESH_BINARY_INV)
+    _, imagem_binarizada = cv2.threshold(img_in, 170, 255, cv2.THRESH_BINARY_INV)
 
     height, width = imagem_binarizada.shape[:2]
     line_spacing = 2
@@ -123,7 +170,7 @@ def Gera_preenchimento_Vf(img_in):
         filling_points.append([x,y])
         filling_points.append([x+w,y])
         
-        cv2.rectangle(imagem_binarizada,(x,y),(x+w,y+h),(255,255,255),1)
+        cv2.line(imagem_binarizada, (x,y), (x+w,y), (255,255,255), 1) 
 
         dict_filling_points["Preenchimento{}".format(i)] = filling_points
 
@@ -194,6 +241,12 @@ def escala_imagem(img_in,papel=(297 , 210),margem=0.1):
     ###############################################################################
     #                       Processar 
     ###############################################################################
+
+    gaussian_value = adjust_gaussian_blur(img_in)
+    img_in = cv2.GaussianBlur(img_in,(gaussian_value,gaussian_value),0)
+
+    treshold_value = select_threshold(img_in)
+    img_in = cv2.threshold(img_in, treshold_value, 255, cv2.THRESH_BINARY)[1]
 
     img_contorno,lista_contorno = Gera_contornos_Vf(img_in)
     img_preenchimento,lista_preenchimento = Gera_preenchimento_Vf(img_in)

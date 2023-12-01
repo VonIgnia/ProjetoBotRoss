@@ -5,9 +5,9 @@ import numpy as np
 from math import *
 import Functions
 
-#img_in = cv2.imread("imgs_avancadas/Imagem1.png", cv2.IMREAD_COLOR)
-img_in = cv2.imread("imgs_iniciais\kirby.png", cv2.IMREAD_COLOR)
-#img_in = cv2.imread("imgs_avancadas\Lenna.png", cv2.IMREAD_COLOR)
+img_in = cv2.imread("imgs_avancadas/birb.jpeg", cv2.IMREAD_COLOR)
+#img_in = cv2.imread("imgs_iniciais/kirby.png", cv2.IMREAD_COLOR)
+#img_in = cv2.imread("imgs_avancadas/Lenna.png", cv2.IMREAD_COLOR)
 if img_in is None:
     print("File not found. Bye!")
     exit(0)
@@ -29,12 +29,12 @@ cv2.destroyAllWindows()
 A4_retrato = (297,210) #dimensões em mm (height, width)
 A4_paisagem = (210,297) #dimensões em mm (height, width)
 
-resized_image = Functions.resize_keeping_aspect_ratio(img_in,A4_retrato)
-cv2.imshow('Resized Image', resized_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+#resized_image = Functions.resize_keeping_aspect_ratio(img_in,A4_retrato)
+#cv2.imshow('Resized Image', resized_image)
+#cv2.waitKey(0)
+#cv2.destroyAllWindows()
 
-hsv_resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2HSV)
+hsv_resized_image = cv2.cvtColor(img_in, cv2.COLOR_BGR2HSV)
 
 [H,S,V] = cv2.split(hsv_resized_image)
 (height,width) = H.shape
@@ -103,7 +103,7 @@ for color in listaHSV_Cores_Canetas:
     gray2 =  cv2.cvtColor(img_out, cv2.COLOR_BGR2GRAY)
     returns, thresh = cv2.threshold(gray2, 1, 255, cv2.THRESH_BINARY)
 
-    Functions.Gera_preenchimento_V2(thresh)
+    Functions.Gera_preenchimento_Vf(thresh)
     cv2.imshow(str(color), thresh)
     cv2.waitKey(0)
 cv2.destroyAllWindows()

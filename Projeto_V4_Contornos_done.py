@@ -1,6 +1,4 @@
 #rodar com arquivo Contornos Done
-
-
 import socket
 import time
 

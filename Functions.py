@@ -8,6 +8,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from math import *
 
+from tkinter import filedialog
+
+def select_image():
+    filepath = filedialog.askopenfilename(title="Select an Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+    return filepath
+  
+
 def adjust_gaussian_blur(image):
     def on_trackbar(value):
         # Get the current trackbar value

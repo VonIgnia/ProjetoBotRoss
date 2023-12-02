@@ -1,6 +1,5 @@
 #PT_BR bibliotecas para processamento de imagem
 #US_EN libraries for image processing
-
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,15 +16,61 @@ import socket
 import time
 import threading
 
+from tkinter import filedialog
+
+###Code begins
+
+def select_image():
+    filepath = filedialog.askopenfilename(title="Select an Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+    return filepath
+
+def resize_keeping_aspect_ratio(img_in,tamanho_folha):
+    current_height, current_width = img_in.shape[:2]
+    width = tamanho_folha[0]
+    height = tamanho_folha[1]
+
+    if height>width:
+        width = 0
+    
+    if width>height:
+        height = 0
+
+    if width == 0:
+        # Calculate the ratio based on the desired height
+        ratio = height / float(current_height)
+        
+    else:
+        # Calculate the ratio based on the desired width
+        ratio = width / float(current_width)
+
+    new_width = int(current_width * ratio)
+    new_height = int(current_height * ratio)
+    resized_img_in = cv2.resize(img_in, (new_width, new_height))
+    
+    #imagem que o robô irá desenhar:
+    #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically
+    #img_h = cv2.flip(hsv_img_in_norm, 1) # flip the image by horizontally
+    #img_vh = cv2.flip(resized_img_in,-1) # flip the image in both axis
+    img_out = resized_img_in
+    #img_out = cv2.flip(resized_img_in, 1)
+    #img_out = cv2.flip(img_out,-1)
+
+    return img_out
+    return resized_image
+
 # SimplifyImageColors "scans" an image and convert every pixel color to the closest color in HSV from the availabel colors list
+#available_colors_list is a list composed of a number of lists with 3 elements(Hue, Saturation, Value)
+#available_colors_list must be give in the format (H[0-360], S([0-100], V[0-100])
+#kH, kS and kV are weight factor attributed to importance of Hue, Saturation nd Value respectively
 def Simplify_Image_Colors(img_in, available_colors_list, kH = 1, kS = 1 , kV = 1):
-    #available_color_list is a list composed of a number of lists with 3 elements(Hue, Saturation, Value) 
-    #kH, kS and kV are weight factor attributed to importance of Hue, Saturation nd Value respectively
+
     hsv_resized_image = cv2.cvtColor(img_in, cv2.COLOR_BGR2HSV)
     [H,S,V] = cv2.split(hsv_resized_image)
     (height,width) = H.shape
 
+    #normalize HSV parameters to match opencv documentation
     #converts "normal" parameters of HSV to opencv2 parameters of HSV (check opencv documentation)
+    #For HSV, hue range is [0,179], saturation range is [0,255], and value range is [0,255]
     for color in available_colors_list:
         color[0] = int(np.clip((color[0])/2,0,255))
         color[1] = int(np.clip((color[1]*255)/100,0,255))
@@ -61,7 +106,7 @@ def Simplify_Image_Colors(img_in, available_colors_list, kH = 1, kS = 1 , kV = 1
 #It creates an array of binary images, one for each available color
 def Split_Colors(img_in, lista_cores_disponiveis):
     (height,width) = (img_in.shape[0], img_in.shape[1])
-    
+    dict_splitted_color_images = {}
     for color in lista_cores_disponiveis:
         img_out = img_in
         for i in range(height-1):
@@ -72,9 +117,10 @@ def Split_Colors(img_in, lista_cores_disponiveis):
                 else:
                     img_out[i,j] = [0,0,0]
         img_out = cv2.cvtColor(img_out, cv2.COLOR_HSV2BGR)
+        dict_splitted_color_images[str(color)] = img_out
         cv2.imshow(str(color), img_out)
         cv2.waitKey(0)
-        return img_out
+        return dict_splitted_color_images
 
 def Generate_contours(img_in):
     # Turn a Grayscale input Image into a binary image
@@ -160,4 +206,6 @@ def Gera_preenchimento_Vf(img_in):
             Prototipo_lista_preenchimentos.append(j) #acrescenta o ponto [x,y,z] na lista
         Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60]))) #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
     
-    return imagem_binarizada,Prototipo_lista_preenchimentos
+    #return imagem_binarizada,Prototipo_lista_preenchimentos
+    cv2.imshow("cor", imagem_binarizada)
+    return Prototipo_lista_preenchimentos

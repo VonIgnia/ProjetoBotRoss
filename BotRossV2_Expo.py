@@ -23,19 +23,6 @@ PORT_SEND = 12345    # Replace with the desired port for sending data to the rob
 PORT_RECEIVE = 12346 # Replace with the desired port for receiving data from the robot
 
 ### Code
-
-import cv2
-import matplotlib.pyplot as plt
-
-import numpy as np
-from math import *
-import FunctionsV2
-
-import socket
-import time
-import threading
-
-
 img_in = cv2.imread(FunctionsV2.select_image(), cv2.IMREAD_COLOR)
 #img_in = cv2.imread("imgs_avancadas\PatBenatar.jpg", cv2.IMREAD_COLOR)
 if img_in is None:
@@ -46,12 +33,6 @@ A4_retrato = (297,210) #dimensões em mm (height, width)
 A4_paisagem = (210,297) #dimensões em mm (height, width)
 
 resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,A4_retrato)
-
-"""
-cv2.imshow('Resized Image', resized_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-"""
 
 #imagem que o robô irá desenhar:
 #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically
@@ -79,7 +60,6 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 dict_filings_by_color = FunctionsV2.Split_Colors(simplified_colors, listaHSV_Cores_Canetas)
-#print(dict_filings_by_color.keys())
 dict_point_positions_by_color = {}
 for element in dict_filings_by_color.keys():
     RGB_split_preview = cv2.cvtColor(dict_filings_by_color[element], cv2.COLOR_HSV2BGR)
@@ -89,31 +69,6 @@ for element in dict_filings_by_color.keys():
     binirized_color =  cv2.cvtColor(dict_filings_by_color[element], cv2.COLOR_BGR2GRAY)
     returns, thresh = cv2.threshold(binirized_color, 1, 255, cv2.THRESH_BINARY)
     point_positions = FunctionsV2.Generate_fillings(thresh, element)
-"""
-(height,width) = (simplified_colors.shape[0], simplified_colors.shape[1])
-
-#creates a blank one channel image into a blank three channel image in order to pass HSV or RGB values to it
-img_out = np.zeros((height,width), dtype="uint8")
-img_out = cv2.cvtColor(img_out,cv2.COLOR_GRAY2BGR)
-
-for color in listaHSV_Cores_Canetas:
-    for i in range(height-1):
-        for j in range(width-1):
-            if np.all(simplified_colors[i,j] == color):
-                img_out[i,j] =  color
-            else:
-                img_out[i,j] = [0,0,0]
-
-    img_out = cv2.cvtColor(img_out, cv2.COLOR_HSV2BGR)
-    grayscale_colors =  cv2.cvtColor(img_out, cv2.COLOR_BGR2GRAY)
-    returns, thresh = cv2.threshold(grayscale_colors, 1, 255, cv2.THRESH_BINARY)
-
-    cv2.imshow(str(color), img_out)
-    cv2.waitKey(0)
-
-    point_positions = FunctionsV2.Generate_fillings(thresh)
-    #cv2.destroyAllWindows()
-"""
 
 print ('Program Started')
 print('Trying Connection')

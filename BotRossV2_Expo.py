@@ -20,8 +20,9 @@ import threading
 
 # Constants
 HOST = '10.103.16.11'  # Replace with the actual IP address of your UR5 robot
-PORT_COORDINATES = 20000    # Replace with the desired port for sending data to the robot
-PORT_COLOR = 20200
+PORT_COLOR = 30001
+PORT_COORDINATES = 30002    # Replace with the desired port for sending data to the robot
+
 #PORT_RECEIVE = 12346 # Replace with the desired port for receiving data from the robot
 
 ### Code
@@ -44,8 +45,13 @@ resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,A4_retrato)
 #img_in_norm_vh = cv2.flip(hsv_resized_image,-1) # flip the image in both axis
 
 #cores + preto e branco
-listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],
+Rainbow_Pallete =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],
                            [214, 94.3, 64.7],[326, 71.9, 57.3],[240,80,25],[0,0,10]]
+
+SkinTones_Pallete = [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[34,53,88],[34,68,77],[34,49,99],[137,85.5,43.1],[0,0,10]]
+
+listaHSV_Cores_Canetas = Rainbow_Pallete
+#listaHSV_Cores_Canetas = SkinTones_Pallete
 
 #lista reduzida para testes (cores quentes)
 #listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100]]
@@ -78,30 +84,38 @@ while (Color_socket_connected == False):
     if (Color_socket_addr[0] != ''):
         Color_socket_connected = True
         print("Color_socket_connected")
-        
+
+
+first_loop_in_color = True     
 for color in dict_filings_by_color.keys():
     
-    #Checking if color Done: color must be done by the start
-    Color_done = Color_socket_c.recv(1024)
-    print (Color_done)
-    
-    #while color is not done wait until color is done
-    while msg != "color_done":
-        time.sleep(0.5)
+    #check if this is the first loop in this color, because in other loops it expects a message that wasnt sent by th UR
+    if first_loop_in_color == True:
+        #Checking if color Done: color must be done by the start
+        msg_color_done = Color_socket_c.recv(1024)
+        print ("ouvindo{}".format(msg_color_done))
 
-    #when color is done create a new Coordinates_Socket
-    print('Trying Coordinate Socket Connection')
-    Coord_socket_connected = False
-    while (Coord_socket_connected == False):
+    
+        #while color is not done wait until color is done
+        while msg_color_done != b"color_done":
+            print (msg_color_done)
+            time.sleep(0.5)
+
+        #when color is done create a new Coordinates_Socket
+        print('Trying Coordinate Socket Connection')
+        Coord_socket_connected = False
+        while (Coord_socket_connected == False):
         
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind((HOST, PORT_COORDINATES))
-        s.listen(5)
-        c, addr = s.accept()
-        if (addr[0] != ''):
-            Coord_socket_connected = True
-            print("Coordinate socket {} connected".format(color))
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT_COORDINATES))
+            s.listen(5)
+            c, addr = s.accept()
+            if (addr[0] != ''):
+                Coord_socket_connected = True
+                print("Coordinate socket {} connected".format(color))
+        
+        first_loop_in_color = False
     
     RGB_split_preview = cv2.cvtColor(dict_filings_by_color[color], cv2.COLOR_HSV2BGR)
     #cv2.imshow(color, RGB_split_preview)
@@ -175,13 +189,14 @@ for color in dict_filings_by_color.keys():
         count += 1
 
     time.sleep(10)
-    msg = c.recv(1024)
-    print (msg)
-    if msg == "color_done":
-        c.close()
-        s.close()
-        print('Disconnected')
-        print('Finished Colour')
+    #msg = c.recv(1024)
+    #print (msg)
+    #if msg == "color_done":
+    c.close()
+    s.close()
+    print('Coordinate Socket Disconnected')
+    print('Finished Color {}'.format(color))
+    first_loop_in_color = True
     
 "############################################ socket end #############################################################################################"
 ###Threads

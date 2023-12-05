@@ -8,7 +8,7 @@ import cv2
 
 print ('Program Started')
 
-HOST = '10.103.16.140'
+HOST = '10.103.16.11'
 PORT = 20000
 
 print('Trying Connection')
@@ -25,7 +25,7 @@ while (connected == False):
         connected = True
         print("Connected")
 
-img_in = cv2.imread("imgs_iniciais\shapes.jpg", cv2.IMREAD_COLOR)
+img_in = cv2.imread("imgs_iniciais/red.png", cv2.IMREAD_COLOR)
 
 A4_paisagem = (297,210) #dimensões em mm (width, height)
 resized = Functions.resize_keeping_aspect_ratio(img_in,A4_paisagem)
@@ -34,21 +34,8 @@ resized = Functions.resize_keeping_aspect_ratio(img_in,A4_paisagem)
 gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
 # Apply binary thresholding
 _, imagem_binarizada = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-point_positions = Functions.Gera_preenchimento_V3(imagem_binarizada)
+point_positions = Functions.Gera_preenchimento_Vf(imagem_binarizada)
 
-lista = []
-linha = 0
-num_linhas = 10
-
-#while linha<num_linhas:
-#    lista.append([0,linha*5,0])
-#    lista.append([180,linha*5,0])
-#    lista.append([180,linha*5,60])
-#    lista.append([0,linha*5,60])
-#    linha+=1
-#print (lista)
-
-#lista = [[0,0,0],[180,0,0],[180,5,0],[0,5,0],[0,10,0],[180,10,0]]
 lista = point_positions
 lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
 lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos

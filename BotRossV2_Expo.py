@@ -15,16 +15,20 @@ import FunctionsV2
 #US_EN libraries for UR5 communication
 import socket
 import time
+import logging
 import threading
 
 # Constants
-HOST = '10.103.16.140'  # Replace with the actual IP address of your UR5 robot
-PORT_SEND = 12345    # Replace with the desired port for sending data to the robot
-PORT_RECEIVE = 12346 # Replace with the desired port for receiving data from the robot
+HOST = '10.103.16.11'  # Replace with the actual IP address of your UR5 robot
+PORT_COORDINATES = 20000    # Replace with the desired port for sending data to the robot
+PORT_COLOR = 20200
+#PORT_RECEIVE = 12346 # Replace with the desired port for receiving data from the robot
 
 ### Code
-img_in = cv2.imread(FunctionsV2.select_image(), cv2.IMREAD_COLOR)
-#img_in = cv2.imread("imgs_avancadas\PatBenatar.jpg", cv2.IMREAD_COLOR)
+
+#img_in = cv2.imread(FunctionsV2.select_image(), cv2.IMREAD_COLOR)
+img_in = cv2.imread("imgs_avancadas\Imagem1.png", cv2.IMREAD_COLOR)
+
 if img_in is None:
     print("File not found. Bye!")
     exit(0)
@@ -40,10 +44,8 @@ resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,A4_retrato)
 #img_in_norm_vh = cv2.flip(hsv_resized_image,-1) # flip the image in both axis
 
 #cores + preto e branco
-listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],
-                           [60,100,100],[137,85.5,43.1],[197,70,83.5],
-                           [214, 94.3, 64.7],[326, 71.9, 57.3],[240,80,25],
-                           [0,0,10]]
+listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],
+                           [214, 94.3, 64.7],[326, 71.9, 57.3],[240,80,25],[0,0,10]]
 
 #lista reduzida para testes (cores quentes)
 #listaHSV_Cores_Canetas =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100]]
@@ -61,14 +63,131 @@ cv2.destroyAllWindows()
 
 dict_filings_by_color = FunctionsV2.Split_Colors(simplified_colors, listaHSV_Cores_Canetas)
 dict_point_positions_by_color = {}
-for element in dict_filings_by_color.keys():
-    RGB_split_preview = cv2.cvtColor(dict_filings_by_color[element], cv2.COLOR_HSV2BGR)
-    cv2.imshow(element, RGB_split_preview)
-    cv2.waitKey(0)
+
+
+print('Trying Color Socket Connection')
+count = 0
+
+Color_socket_connected = False
+while (Color_socket_connected == False):
+    Color_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    Color_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    Color_socket.bind((HOST, PORT_COLOR))
+    Color_socket.listen(5)
+    Color_socket_c, Color_socket_addr = Color_socket.accept()
+    if (Color_socket_addr[0] != ''):
+        Color_socket_connected = True
+        print("Color_socket_connected")
+        
+for color in dict_filings_by_color.keys():
     
-    binirized_color =  cv2.cvtColor(dict_filings_by_color[element], cv2.COLOR_BGR2GRAY)
+    #Checking if color Done: color must be done by the start
+    Color_done = Color_socket_c.recv(1024)
+    print (Color_done)
+    
+    #while color is not done wait until color is done
+    while msg != "color_done":
+        time.sleep(0.5)
+
+    #when color is done create a new Coordinates_Socket
+    print('Trying Coordinate Socket Connection')
+    Coord_socket_connected = False
+    while (Coord_socket_connected == False):
+        
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((HOST, PORT_COORDINATES))
+        s.listen(5)
+        c, addr = s.accept()
+        if (addr[0] != ''):
+            Coord_socket_connected = True
+            print("Coordinate socket {} connected".format(color))
+    
+    RGB_split_preview = cv2.cvtColor(dict_filings_by_color[color], cv2.COLOR_HSV2BGR)
+    #cv2.imshow(color, RGB_split_preview)
+    #cv2.waitKey(0)
+    
+    binirized_color =  cv2.cvtColor(dict_filings_by_color[color], cv2.COLOR_BGR2GRAY)
     returns, thresh = cv2.threshold(binirized_color, 1, 255, cv2.THRESH_BINARY)
-    point_positions = FunctionsV2.Generate_fillings(thresh, element)
+    #dict_filings_by_color[color] = FunctionsV2.Generate_fillings(thresh, color)
+    
+
+    point_positions = FunctionsV2.Generate_fillings(thresh, color)
+
+    "############################################ socket start#############################################################################################"
+        
+    lista=point_positions 
+    lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
+    lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
+
+    T = len(lista)
+
+    tam_max_comm = 10 #numero de pontos que serão passados a cada vez para o robo
+
+    n_appends = tam_max_comm - ( T% tam_max_comm)
+    print (n_appends)
+    while n_appends != 0:
+        lista.append([0,0,0])
+        n_appends = n_appends-1
+
+    T = len(lista)
+
+    cpi = 0 #indica o indice do ponto atual na lista T(current point index)
+
+    #enquanto o tamanho da lista que vai ser comunicada for menor do que o tamanho comunicável
+    #percorrer cada elemento da lista e adicionar às listas que serão comunicadas
+    pontos_enviados = 0
+
+    print(lista)
+
+    while pontos_enviados < T: #enquanto o indice do ponto atual for mentor que o compriomento total da lista de pontos
+        if T - cpi < tam_max_comm: #se o numero de pontos da lista que faltam ser comunicados forem menores do que o valor de pontos que serão comunicados
+            tam_max_comm = T-cpi   #numero de pontos que serão passados a cada vez para o robo
+
+        X = [] #X ,Y e Z irão conter t_max_comm coordenadas
+        Y = []
+        Z = []
+        
+        while len(Z) < tam_max_comm:
+            X.append(lista[cpi][0])
+            Y.append(lista[cpi][1])
+            Z.append(lista[cpi][2])
+            cpi+=1
+
+        try:
+            c.send(str([tam_max_comm]).encode('ascii')) #tamanho das listas X, Y e Z
+            print ("num_pontos", [tam_max_comm])
+            time.sleep(0)
+            c.send(str(X).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
+            print ("X", X)
+            time.sleep(0)
+            c.send(str(Y).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
+            print ("Y", Y)
+            time.sleep(0)
+            c.send(str(Z).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
+            print ("Z", Z)
+            time.sleep(0)
+        
+        except socket.error as socketerror:
+            print (count)
+
+        pontos_enviados+=tam_max_comm
+        count += 1
+
+    time.sleep(10)
+    msg = c.recv(1024)
+    print (msg)
+    if msg == "color_done":
+        c.close()
+        s.close()
+        print('Disconnected')
+        print('Finished Colour')
+    
+"############################################ socket end #############################################################################################"
+###Threads
+
+
+
 
 print ('Program Started')
 print('Trying Connection')

@@ -14,6 +14,38 @@ def select_image():
     filepath = filedialog.askopenfilename(title="Select an Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
     return filepath
   
+def resize_keeping_aspect_ratio(img_in,tamanho_folha):
+    current_height, current_width = img_in.shape[:2]
+    width = tamanho_folha[0]
+    height = tamanho_folha[1]
+
+    if height>width:
+        width = 0
+    
+    if width>height:
+        height = 0
+
+    if width == 0:
+        # Calculate the ratio based on the desired height
+        ratio = height / float(current_height)
+        
+    else:
+        # Calculate the ratio based on the desired width
+        ratio = width / float(current_width)
+
+    new_width = int(current_width * ratio)
+    new_height = int(current_height * ratio)
+    resized_img_in = cv2.resize(img_in, (new_width, new_height))
+    
+    #imagem que o robô irá desenhar:
+    #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically
+    #img_h = cv2.flip(hsv_img_in_norm, 1) # flip the image by horizontally
+    #img_vh = cv2.flip(resized_img_in,-1) # flip the image in both axis
+    img_out = resized_img_in
+    #img_out = cv2.flip(resized_img_in, 1)
+    #img_out = cv2.flip(img_out,-1)
+
+    return img_out
 
 def adjust_gaussian_blur(image):
     def on_trackbar(value):
@@ -195,7 +227,7 @@ def Gera_preenchimento_Vf(img_in):
             Prototipo_lista_preenchimentos.append(j) #acrescenta o ponto [x,y,z] na lista
         Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60]))) #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
 
-    return imagem_binarizada,Prototipo_lista_preenchimentos
+    return Prototipo_lista_preenchimentos
 
 def escala_imagem(img_in,papel=(297 , 210),margem=0.1):
     #imagem do preview

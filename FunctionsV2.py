@@ -169,7 +169,9 @@ def Generate_fillings(img_in,color):
     
     #return imagem_binarizada,Prototipo_lista_preenchimentos
     #i atual representa o numero final de contornos, por isso está aparecendo Preenchimento994 ou Preenchimento1037 (essas coisas)
-    cv2.imshow("{}".format(i_atual), line_image)
+    
+    #cv2.imshow("{}".format(i_atual), line_image)
+    
     #cv2.waitKey(0)
     return Prototipo_lista_preenchimentos
 
@@ -179,20 +181,21 @@ def receive_data_from_ur5(HOST, PORT_RECEIVE):
     receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     receive_socket.bind((HOST, PORT_RECEIVE))
     receive_socket.listen(5)
-    c, addr = s.accept()
+    c, addr = receive_socket.accept()
     if (addr[0] != ''):
         reciever_connected = True
         print(f"Listening for UR5 data on {HOST}:{PORT_RECEIVE}")
     return reciever_connected
 
 # Function to handle sending instructions to UR5
-def send_instructions_to_ur5(HOST, PORT_RECEIVE):
+def send_instructions_to_ur5(HOST, PORT_SEND):
     send_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    send_socket.bind((HOST, PORT_RECEIVE))
+    send_socket.bind((HOST, PORT_SEND))
     send_socket.listen(5)
-    c, addr = s.accept()
+    c, addr = send_socket.accept()
     if (addr[0] != ''):
         sender_connected = True
         print(f"Connected to UR5 for sending instructions on {HOST}:{PORT_SEND}")
     return sender_connected
+

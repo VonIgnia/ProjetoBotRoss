@@ -19,7 +19,7 @@ import logging
 import threading
 
 # Constants
-HOST = '10.103.16.11'  # Replace with the actual IP address of your UR5 robot
+HOST = '10.103.16.221'  # Replace with the actual IP address of your UR5 robot
 PORT_COLOR = 30001
 PORT_COORDINATES = 30002    # Replace with the desired port for sending data to the robot
 
@@ -85,37 +85,31 @@ while (Color_socket_connected == False):
         Color_socket_connected = True
         print("Color_socket_connected")
 
-
-first_loop_in_color = True     
 for color in dict_filings_by_color.keys():
     
-    #check if this is the first loop in this color, because in other loops it expects a message that wasnt sent by th UR
-    if first_loop_in_color == True:
-        #Checking if color Done: color must be done by the start
-        msg_color_done = Color_socket_c.recv(1024)
-        print ("ouvindo{}".format(msg_color_done))
+    #Checking if color Done: color must be done by the start
+    msg_color_done = Color_socket_c.recv(1024)
+    print ("ouvindo{}".format(msg_color_done))
 
-    
-        #while color is not done wait until color is done
-        while msg_color_done != b"color_done":
-            print (msg_color_done)
-            time.sleep(0.5)
+    #while color is not done wait until color is done
+    while msg_color_done != b"color_done":
+        print (msg_color_done)
+        time.sleep(0.5)
 
-        #when color is done create a new Coordinates_Socket
-        print('Trying Coordinate Socket Connection')
-        Coord_socket_connected = False
-        while (Coord_socket_connected == False):
+    #when color is done create a new Coordinates_Socket
+    print('Trying Coordinate Socket Connection')
+    Coord_socket_connected = False
+    while (Coord_socket_connected == False):
         
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind((HOST, PORT_COORDINATES))
-            s.listen(5)
-            c, addr = s.accept()
-            if (addr[0] != ''):
-                Coord_socket_connected = True
-                print("Coordinate socket {} connected".format(color))
-        
-        first_loop_in_color = False
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((HOST, PORT_COORDINATES))
+        s.listen(5)
+        c, addr = s.accept()
+        if (addr[0] != ''):
+            Coord_socket_connected = True
+            print("Coordinate socket {} connected".format(color))
+
     
     RGB_split_preview = cv2.cvtColor(dict_filings_by_color[color], cv2.COLOR_HSV2BGR)
     #cv2.imshow(color, RGB_split_preview)
@@ -170,7 +164,7 @@ for color in dict_filings_by_color.keys():
 
         try:
             c.send(str([tam_max_comm]).encode('ascii')) #tamanho das listas X, Y e Z
-            print ("num_pontos", [tam_max_comm])
+            print ("num_pontos", tam_max_comm)
             time.sleep(0)
             c.send(str(X).encode('ascii')) #codifica (x,y,z,Rx,Ry,Rz) para um formato compreendido pelo robô
             print ("X", X)
@@ -188,7 +182,9 @@ for color in dict_filings_by_color.keys():
         pontos_enviados+=tam_max_comm
         count += 1
 
-    time.sleep(10)
+    #erro nao está em fechar o socket ou deixar de fechar o socket
+    
+    #time.sleep(10)
     #msg = c.recv(1024)
     #print (msg)
     #if msg == "color_done":
@@ -196,7 +192,7 @@ for color in dict_filings_by_color.keys():
     s.close()
     print('Coordinate Socket Disconnected')
     print('Finished Color {}'.format(color))
-    first_loop_in_color = True
+
     
 "############################################ socket end #############################################################################################"
 ###Threads

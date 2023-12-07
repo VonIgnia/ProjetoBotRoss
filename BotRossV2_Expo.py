@@ -19,7 +19,7 @@ import logging
 import threading
 
 # Constants
-HOST = '10.103.16.221'  # Replace with the actual IP address of your UR5 robot
+HOST = '10.103.16.232'  # Replace with the actual IP address of your UR5 robot
 PORT_COLOR = 30001
 PORT_COORDINATES = 30002    # Replace with the desired port for sending data to the robot
 
@@ -27,8 +27,8 @@ PORT_COORDINATES = 30002    # Replace with the desired port for sending data to 
 
 ### Code
 
-#img_in = cv2.imread(FunctionsV2.select_image(), cv2.IMREAD_COLOR)
-img_in = cv2.imread("imgs_avancadas\Imagem1.png", cv2.IMREAD_COLOR)
+img_in = cv2.imread(FunctionsV2.select_image(), cv2.IMREAD_COLOR)
+#img_in = cv2.imread("imgs_avancadas\Imagem1.png", cv2.IMREAD_COLOR)
 
 if img_in is None:
     print("File not found. Bye!")
@@ -71,6 +71,8 @@ dict_filings_by_color = FunctionsV2.Split_Colors(simplified_colors, listaHSV_Cor
 dict_point_positions_by_color = {}
 
 
+"########################################### SOCKET COLOR START #################################################"
+
 print('Trying Color Socket Connection')
 count = 0
 
@@ -86,14 +88,13 @@ while (Color_socket_connected == False):
         print("Color_socket_connected")
 
 for color in dict_filings_by_color.keys():
-    
-    #Checking if color Done: color must be done by the start
-    msg_color_done = Color_socket_c.recv(1024)
-    print ("ouvindo{}".format(msg_color_done))
+    "############################################ socket coordinates start #############################################################################################"
 
-    #while color is not done wait until color is done
-    while msg_color_done != b"color_done":
-        print (msg_color_done)
+    #Checking if UR is ready to recieve color: color must be done by the start
+    ready_to_recieve_color = Color_socket_c.recv(1024)
+    #while UR is not ready to recieve color info wait until UR is ready
+    while ready_to_recieve_color != b"ready":
+        print (ready_to_recieve_color)
         time.sleep(0.5)
 
     #when color is done create a new Coordinates_Socket
@@ -110,7 +111,6 @@ for color in dict_filings_by_color.keys():
             Coord_socket_connected = True
             print("Coordinate socket {} connected".format(color))
 
-    
     RGB_split_preview = cv2.cvtColor(dict_filings_by_color[color], cv2.COLOR_HSV2BGR)
     #cv2.imshow(color, RGB_split_preview)
     #cv2.waitKey(0)
@@ -121,8 +121,6 @@ for color in dict_filings_by_color.keys():
     
 
     point_positions = FunctionsV2.Generate_fillings(thresh, color)
-
-    "############################################ socket start#############################################################################################"
         
     lista=point_positions 
     lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
@@ -182,24 +180,17 @@ for color in dict_filings_by_color.keys():
         pontos_enviados+=tam_max_comm
         count += 1
 
-    #erro nao está em fechar o socket ou deixar de fechar o socket
-    
-    #time.sleep(10)
-    #msg = c.recv(1024)
-    #print (msg)
-    #if msg == "color_done":
+    Robot_operation = c.recv(1024)
+    if Robot_operation == b"robot_operation_done":
+        print("Robot Operation")
+        Color = "Color is done"
+        Color_socket_c.send(Color.encode('ascii'))
+    print ("ColorisDone")
+
     c.close()
     s.close()
     print('Coordinate Socket Disconnected')
     print('Finished Color {}'.format(color))
 
     
-"############################################ socket end #############################################################################################"
-###Threads
-
-
-
-
-print ('Program Started')
-print('Trying Connection')
-count = 0
+"############################################ socket coordenadas end #############################################################################################"

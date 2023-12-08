@@ -119,7 +119,7 @@ def Split_Colors(img_in, available_colors_list):
 
 def Generate_fillings(img_in,color):
     height, width = img_in.shape[:2]
-    line_spacing = 2
+    line_spacing = 40
 
     # create a frame
     line_image = np.zeros((height, width), dtype=np.uint8)
@@ -146,9 +146,9 @@ def Generate_fillings(img_in,color):
         
         cv2.line(line_image, (x,y), (x+w,y), (255,255,255), 1) 
         
-    cv2.imshow("{}".format(i), line_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow("{}".format(i), line_image)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
     return filling_points
 
 

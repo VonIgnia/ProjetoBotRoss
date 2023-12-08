@@ -50,7 +50,9 @@ Rainbow_Pallete =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.
 
 SkinTones_Pallete = [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[34,53,88],[34,68,77],[34,49,99],[137,85.5,43.1],[0,0,10]]
 
-listaHSV_Cores_Canetas = Rainbow_Pallete
+RedGrenBluYe = [[0,0,100],[0,100,80],[60,100,100],[137,85.5,43.1],[197,70,83.5],[0,0,10]]
+
+listaHSV_Cores_Canetas = RedGrenBluYe
 #listaHSV_Cores_Canetas = SkinTones_Pallete
 
 #lista reduzida para testes (cores quentes)
@@ -117,14 +119,9 @@ for color in dict_filings_by_color.keys():
     
     binirized_color =  cv2.cvtColor(dict_filings_by_color[color], cv2.COLOR_BGR2GRAY)
     returns, thresh = cv2.threshold(binirized_color, 1, 255, cv2.THRESH_BINARY)
-    #dict_filings_by_color[color] = FunctionsV2.Generate_fillings(thresh, color)
-    
-
     point_positions = FunctionsV2.Generate_fillings(thresh, color)
         
     lista=point_positions 
-    lista.insert(0, list(np.add(lista[0],[0,0,60]))) #acrescenta movimento em Z no início do contorno para não rabiscar entre contornos
-    lista.append(list(np.add(lista[-1],[0,0,60])))   #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
 
     T = len(lista)
 
@@ -143,9 +140,7 @@ for color in dict_filings_by_color.keys():
     #enquanto o tamanho da lista que vai ser comunicada for menor do que o tamanho comunicável
     #percorrer cada elemento da lista e adicionar às listas que serão comunicadas
     pontos_enviados = 0
-
-    print(lista)
-
+    
     while pontos_enviados < T: #enquanto o indice do ponto atual for mentor que o compriomento total da lista de pontos
         if T - cpi < tam_max_comm: #se o numero de pontos da lista que faltam ser comunicados forem menores do que o valor de pontos que serão comunicados
             tam_max_comm = T-cpi   #numero de pontos que serão passados a cada vez para o robo

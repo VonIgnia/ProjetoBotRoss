@@ -1,0 +1,97 @@
+def buffer_test_segunda():
+  set_tcp(p[0.0,0.0,0.18,0.0,3.14,0.0])
+  set_payload(0.71, [0.0, 0.0, 0.275])
+  set_tool_voltage(24)
+  set_safety_mode_transition_hardness(0)
+  modbus_add_signal("10.103.16.140", 255, 0, 2, "prod_na_cx", True)
+  modbus_set_signal_update_frequency("prod_na_cx", 10)
+  modbus_add_signal("10.103.16.140", 255, 1, 2, "n_insp", True)
+  modbus_set_signal_update_frequency("n_insp", 10)
+  modbus_add_signal("10.103.16.140", 255, 0, 3, "prod_encaixota", True)
+  modbus_set_signal_update_frequency("prod_encaixota", 10)
+  modbus_set_runstate_dependent_choice("prod_encaixota",0)
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 0)
+  set_tool_analog_input_domain(1, 0)
+  set_analog_outputdomain(0, 1)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  step_count_a6423fc5_f93c_440e_91ac_32f07d698252 = 0.0
+  thread Step_Counter_Thread_9c583513_449b_4840_b9ac_8908b0412167():
+    while (True):
+      step_count_a6423fc5_f93c_440e_91ac_32f07d698252 = step_count_a6423fc5_f93c_440e_91ac_32f07d698252 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_9c583513_449b_4840_b9ac_8908b0412167()
+  set_gravity([0.0, 0.0, 9.82])
+  global plane=[0, 0, 0, 0, 0, 0]
+  global free=1
+  global Gaveteiro_plane=p[-0.18391406007170819,-0.6890912013208738,-0.3091053148893457,-3.136624244641354,-0.07450754164245207,-0.012062489851684073]
+  global Plane_var=p[0.0455072287759728,0.5532633607914713,-0.12009520789912541,0.02088120484419274,0.010016746118093,-0.02458726325044075]
+  global PlanoArAula9=p[0.7942382577522773,-0.05274490106868765,0.28953087333027294,-1.2101977474418126,-1.2112243285351472,1.2072853144995164]
+  global PlanoMesaAula9=p[0.4316603038800538,-0.4176154966413232,-0.22708615915239258,0.0011409468517281232,-0.0021558803218785405,-3.3834622272085614E-4]
+  global Plano_BotRoss=p[0.5333344286239902,-0.33786958973287246,-0.12027585043608989,0.5162943327079684,0.03234551942932595,0.10604419797086047]
+  global Plano_mesa_gio=p[0.5722610509435332,-0.40820095277647794,-0.22787514661355984,0.004980319709535583,-0.010045557410892312,0.003475544605146006]
+  global xadrez=p[0.07245008429201542,0.7162309814300137,-0.2492325678677777,0.021240702277102536,0.009909632298596038,-2.9870755951116497]
+  global xadrez2=p[-0.24762135118614845,0.3378039779312413,-0.2536888643835707,0.03547999981100722,-0.008259935265332035,0.09585250855875074]
+  rtde_set_watchdog("speed_slider_mask", 10.0, "ignore")
+  def Rotina_Contornos():
+    $ 10 "Rotina_Contornos" "noBreak"
+    $ 11 "socket_send_string('asking_for_data')"
+    socket_send_string("asking_for_data")
+    $ 12 "Wait: 0.5"
+    sleep(0.5)
+    $ 13 "read_ascii≔socket_read_ascii_float(3,'gio')"
+    global read_ascii=socket_read_ascii_float(3,"gio")
+    $ 14 "var_1≔socket_read_ascii_float(3,'gio')"
+    global var_1=socket_read_ascii_float(3,"gio")
+    $ 15 "Wait: 0.5"
+    sleep(0.5)
+    $ 16 "SocketIP≔ False "
+    global SocketIP=  False  
+    $ 17 "socket_close('gio')"
+    socket_close("gio")
+    $ 18 "If read_ascii[0]≠0"
+    if (read_ascii[0] != 0):
+      $ 19 "pose_desejada≔p[read_ascii[1]/1000,read_ascii[2]/1000,var_1[1]/1000,0,0,0]"
+      global pose_desejada=p[read_ascii[1]/1000,read_ascii[2]/1000,var_1[1]/1000,0,0,0]
+      $ 20 "pose_atual≔get_actual_tcp_pose()"
+      global pose_atual=get_actual_tcp_pose()
+      $ 21 "destino≔pose_trans(Plano_BotRoss,pose_desejada)"
+      global destino=pose_trans(Plano_BotRoss,pose_desejada)
+      $ 22 "MoveL"
+      $ 23 "destino" "breakAfter"
+      movel(pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], destino), a=1.2, v=0.25)
+      $ 24 "Wait: 0"
+    end
+  end
+  def Rotina_Pick_Caneta():
+    $ 25 "Rotina_Pick_Caneta" "noBreak"
+    $ 26 "Wait: 0.01"
+    sleep(0.01)
+    $ 27 "'a linha a seguir causa um movimento brusco e intenso'"
+    # 'a linha a seguir causa um movimento brusco e intenso'
+    $ 28 "speedl([0.5,0.5,0.5,0,0,0],0.5,5)"
+    speedl([0.5,0.5,0.5,0,0,0],0.5,5)
+  end
+  $ 1 "BeforeStart"
+  $ 2 "SocketIP≔socket_open('10.103.16.140',30000,'gio')"
+  global SocketIP=socket_open("10.103.16.140",30000,"gio")
+  $ 3 "MoveJ"
+  $ 4 "origem" "breakAfter"
+  movej(get_inverse_kin(p[.536622440971, -.323281818182, -.120682863121, -.080993754618, .010819393965, .111907384715], qnear=[2.4486498832702637, -0.932502571736471, 1.777505874633789, -2.460346523915426, -1.6313627401935022, 0.7772200703620911]), a=1.3962634015954636, v=1.0471975511965976)
+  while (True):
+    $ 5 "Robot Program"
+    $ 6 "Loop SocketIP≟ False "
+    while (SocketIP ==   False  ):
+      $ 7 "SocketIP≔socket_open('10.103.16.140',30000,'gio')"
+      global SocketIP=socket_open("10.103.16.140",30000,"gio")
+      $ 8 "Wait: 0.5"
+      sleep(0.5)
+      $ 9 "Call Rotina_Contornos"
+      Rotina_Contornos()
+    end
+  end
+end

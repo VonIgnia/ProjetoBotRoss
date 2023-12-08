@@ -1,0 +1,25 @@
+ Program
+   Robot Program
+     com_open≔ False 
+     Loop
+       com_open≔socket_open("10.103.16.140",30000)
+     Call Rotina_Contornos
+   Rotina_Contornos
+     'Numero de pontos em determinado segmento de contorno'
+     N_pontos≔socket_read_ascii_float(1)
+     N≔N_pontos[1]
+     X≔socket_read_ascii_float(N)
+     Y≔socket_read_ascii_float(N)
+     Z≔socket_read_ascii_float(N)
+     socket_close()
+     If X[0]≠0
+       pose_desejada≔p[X[1]/1000,X[2]/1000,read_ascii[3]/1000,0,0,0]
+       pose_atual≔get_actual_tcp_pose()
+       current_pose≔pose_trans(Plano_BotRoss,pose_desejada)
+       MoveL
+         current_pose
+         Wait: 0
+   Rotina_Pick_Caneta
+     Wait: 0.01
+     'a linha a seguir causa um movimento brusco e intenso'
+     speedl([0.5,0.5,0.5,0,0,0],0.5,5)

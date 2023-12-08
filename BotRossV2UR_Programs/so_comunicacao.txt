@@ -1,0 +1,13 @@
+ Program
+   BeforeStart
+     Ip≔socket_open("10.103.16.140",20000)
+   Robot Program
+     Loop Ip≟ False 
+       Ip≔socket_open("10.103.16.140",20000)
+       'Wait: 0.5'
+     Loop Ip≟True
+       'Wait: 0.5'
+       X≔socket_read_ascii_float(30)
+       Y≔socket_read_ascii_float(30)
+       Z≔socket_read_ascii_float(30)
+       'Wait: 0.5'

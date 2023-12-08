@@ -1,0 +1,29 @@
+ Program
+   BeforeStart
+     SocketIP≔socket_open("10.103.16.140",30000,"gio")
+     MoveJ
+       origem
+   Robot Program
+     Loop SocketIP≟ False 
+       SocketIP≔socket_open("10.103.16.140",30000,"gio")
+       Wait: 0.5
+       Call Rotina_Contornos
+   Rotina_Contornos
+     socket_send_string("asking_for_data")
+     Wait: 0.5
+     read_ascii≔socket_read_ascii_float(3,"gio")
+     var_1≔socket_read_ascii_float(3,"gio")
+     Wait: 0.5
+     SocketIP≔ False 
+     socket_close("gio")
+     If read_ascii[0]≠0
+       pose_desejada≔p[read_ascii[1]/1000,read_ascii[2]/1000,var_1[1]/1000,0,0,0]
+       pose_atual≔get_actual_tcp_pose()
+       destino≔pose_trans(Plano_BotRoss,pose_desejada)
+       MoveL
+         destino
+         Wait: 0
+   Rotina_Pick_Caneta
+     Wait: 0.01
+     'a linha a seguir causa um movimento brusco e intenso'
+     speedl([0.5,0.5,0.5,0,0,0],0.5,5)

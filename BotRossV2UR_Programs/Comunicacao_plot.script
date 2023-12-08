@@ -1,0 +1,74 @@
+def Comunicacao_plot():
+  set_gravity([0.0, 0.0, 9.82])
+  set_tool_voltage(24)
+  set_safety_mode_transition_hardness(0)
+  step_count_50ad1cc9_49ca_4b13_b481_345a7b98bd58 = 0.0
+  thread Step_Counter_Thread_0a19b6e0_e796_461e_aefc_fc628fe3cb51():
+    while (True):
+      step_count_50ad1cc9_49ca_4b13_b481_345a7b98bd58 = step_count_50ad1cc9_49ca_4b13_b481_345a7b98bd58 + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_0a19b6e0_e796_461e_aefc_fc628fe3cb51()
+  set_tcp(p[0.0,0.0,0.18,0.0,3.14,0.0])
+  set_payload(0.71, [0.0, 0.0, 0.275])
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 0)
+  set_tool_analog_input_domain(1, 0)
+  set_analog_outputdomain(0, 1)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  global plane=[0, 0, 0, 0, 0, 0]
+  global free=1
+  global Gaveteiro_plane=p[-0.18391406007170819,-0.6890912013208738,-0.3091053148893457,-3.136624244641354,-0.07450754164245207,-0.012062489851684073]
+  global Plane_var=p[0.0455072287759728,0.5532633607914713,-0.12009520789912541,0.02088120484419274,0.010016746118093,-0.02458726325044075]
+  global PlanoMesaAula9=p[0.4316603038800538,-0.4176154966413232,-0.22708615915239258,0.0011409468517281232,-0.0021558803218785405,-3.3834622272085614E-4]
+  global Plano_BotRoss=p[0.5680544659074329,-0.30051965182190454,-0.1239184987291207,0.018840838056602166,-7.426118144812244E-5,0.11867329291641865]
+  global Plano_mesa_gio=p[0.5722610509435332,-0.40820095277647794,-0.22787514661355984,0.004980319709535583,-0.010045557410892312,0.003475544605146006]
+  global socketIP=p[0.7942382577522773,-0.05274490106868765,0.28953087333027294,-1.2101977474418126,-1.2112243285351472,1.2072853144995164]
+  global xadrez=p[0.07245008429201542,0.7162309814300137,-0.2492325678677777,0.021240702277102536,0.009909632298596038,-2.9870755951116497]
+  global xadrez2=p[-0.24762135118614845,0.3378039779312413,-0.2536888643835707,0.03547999981100722,-0.008259935265332035,0.09585250855875074]
+  rtde_set_watchdog("speed_slider_mask", 10.0, "ignore")
+  $ 1 "BeforeStart"
+  $ 2 "Socket≔socket_open('10.103.16.140',20000)"
+  global Socket=socket_open("10.103.16.140",20000)
+  $ 3 "Num_points≔socket_read_ascii_float(1)"
+  global Num_points=socket_read_ascii_float(1)
+  while (True):
+    $ 4 "Robot Program"
+    $ 5 "Loop Socket≟ False "
+    while (Socket ==   False  ):
+      $ 6 "Socket≔socket_open('10.103.16.140',20000)"
+      global Socket=socket_open("10.103.16.140",20000)
+      $ 7 "Wait: 0.5"
+      sleep(0.5)
+    end
+    $ 8 "Num_points≔socket_read_ascii_float(1)"
+    global Num_points=socket_read_ascii_float(1)
+    $ 9 "N≔Num_points[1]"
+    global N=Num_points[1]
+    $ 10 "Wait: 0.5"
+    sleep(0.5)
+    $ 11 "X≔socket_read_ascii_float(N)"
+    global X=socket_read_ascii_float(N)
+    $ 12 "Y≔socket_read_ascii_float(N)"
+    global Y=socket_read_ascii_float(N)
+    $ 13 "Z≔socket_read_ascii_float(N)"
+    global Z=socket_read_ascii_float(N)
+    $ 14 "Wait: 0.5"
+    sleep(0.5)
+    $ 15 "count≔1"
+    global count=1
+    $ 16 "Loop count<N"
+    while (count<N):
+      $ 17 "move2pose≔p[X[count],Y[count],Z[count],3.14,0,0]"
+      global move2pose=p[X[count],Y[count],Z[count],3.14,0,0]
+      $ 18 "MoveL"
+      $ 19 "move2pose" "breakAfter"
+      movel(pose_trans(Plano_BotRoss, move2pose), a=1.2, v=0.25)
+      $ 20 "count≔count+1"
+      global count=count+1
+    end
+  end
+end

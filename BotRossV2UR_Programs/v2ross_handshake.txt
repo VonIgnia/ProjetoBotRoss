@@ -1,0 +1,36 @@
+ Program
+   BeforeStart
+     Socket_color≔socket_open("10.103.16.232",30001,socket_name="color")
+     Socket_coord≔socket_open("10.103.16.232",30002,socket_name="coord")
+     points_done≔""
+     ready_to_move≔ False 
+   Robot Program
+     points_done≔socket_read_string(socket_name="color")
+     If points_done ≟ "Color is done"
+       socket_close(socket_name="coord")
+       Socket_coord≔ False 
+     Loop Socket_color ≟  False 
+       Socket_color≔socket_open("10.103.16.232",30001,socket_name="color")
+     'Ready to recieve coordinates from a color'
+     socket_send_string("ready",socket_name="color")
+     Loop Socket_coord ≟ False 
+       Socket_coord≔socket_open("10.103.16.232",30002,socket_name="coord")
+     Num_points≔socket_read_ascii_float(1,socket_name="coord")
+     N≔Num_points[1]
+     X≔socket_read_ascii_float(N,socket_name="coord")
+     Y≔socket_read_ascii_float(N,socket_name="coord")
+     Z≔socket_read_ascii_float(N,socket_name="coord")
+     count≔1
+     Loop count≤N
+       move2pose≔p[X[count]/1000,Y[count]/1000,Z[count]/1000,0,0,0]
+       MoveL
+         move2pose
+       count≔count+1
+     If X[10] ≟ 0  and Y[10] ≟ 0
+       socket_send_string("robot_operation_done",socket_name="coord")
+     'ready_to_move≔ True '
+     'If ready_to_move ≟ True '
+     'points_done≔socket_read_string(socket_name="color")'
+     'If points_done ≟ "Color is done"'
+   Thread_1
+     'If points_done ≠"Color is done"'

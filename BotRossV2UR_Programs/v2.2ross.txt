@@ -1,0 +1,32 @@
+ Program
+   BeforeStart
+     Socket≔socket_open("10.103.16.11",20000)
+     Num_points≔socket_read_ascii_float(1)
+   Robot Program
+     Loop Socket≟ False 
+       Socket≔socket_open("10.103.16.11",20000)
+     Num_points≔socket_read_ascii_float(1)
+     N≔Num_points[1]
+     X≔socket_read_ascii_float(N)
+     Y≔socket_read_ascii_float(N)
+     Z≔socket_read_ascii_float(N)
+     'Socket≔socket_close()'
+     count≔1
+     Loop count≤N
+       move2pose≔p[X[count]/1000,Y[count]/1000,Z[count]/1000,0,0,0]
+       MoveL
+         move2pose
+       'Wait: 0.5'
+       count≔count+1
+     'socket_close()'
+   Thread_1
+     Loop Socket≟ False 
+       Socket≔socket_open("10.103.16.11",20000)
+     Set
+     Switch ...
+   Event 
+     Wait: 180.0
+   Thread_2
+     Socket≔socket_open("10.103.16.11",20000)
+   Thread_3
+     Socket≔socket_open("10.103.16.11",20000)

@@ -119,7 +119,7 @@ def Split_Colors(img_in, available_colors_list):
 
 def Generate_fillings(img_in,color):
     height, width = img_in.shape[:2]
-    line_spacing = 40
+    line_spacing = 2
 
     # create a frame
     line_image = np.zeros((height, width), dtype=np.uint8)

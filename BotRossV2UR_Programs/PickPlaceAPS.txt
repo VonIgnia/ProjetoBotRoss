@@ -1,0 +1,22 @@
+ Program
+   Robot Program
+     Call Pick
+     Call Place
+   Pick
+     MoveL
+       Waypoint_1
+       Waypoint_2
+     Set open=Off
+     Set close=On
+     Wait: 0.5
+     MoveL
+       Waypoint_1
+   Place
+     MoveL
+       Waypoint_3
+       Waypoint_4
+     Set open=On
+     Set close=Off
+     Wait: 0.5
+     MoveL
+       Waypoint_3

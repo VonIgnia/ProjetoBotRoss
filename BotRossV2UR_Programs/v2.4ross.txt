@@ -1,0 +1,38 @@
+ Program
+   BeforeStart
+     Socket_ready≔ True 
+     Socket≔socket_open("10.103.16.11",20000)
+     Socket_color≔socket_open("10.103.16.11",30000)
+     Num_points≔socket_read_ascii_float(1)
+     PosicaoRecarga≔1
+     posicao_tinta≔p[15*PosicaoRecarga/1000,(PosicaoRecarga+7)/7*15/1000,0,0,0,0]
+     Recarga≔ False 
+     MoveL
+       posicao_tinta
+   Robot Program
+     Loop Socket≟ False 
+       Socket≔socket_open("10.103.16.11",20000)
+     Num_points≔socket_read_ascii_float(1)
+     N≔Num_points[1]
+     X≔socket_read_ascii_float(N)
+     Y≔socket_read_ascii_float(N)
+     Z≔socket_read_ascii_float(N)
+     'Socket≔socket_close()'
+     count≔1
+     If Recarga ≟ False 
+       Loop count≤N
+         move2pose≔p[X[count]/1000,Y[count]/1000,Z[count]/1000,0,0,0]
+         MoveL
+           move2pose
+         'Wait: 0.5'
+         count≔count+1
+     If Recarga ≟  True 
+       MoveL
+         posicao_tinta
+       Recarga≔ False 
+     'socket_close()'
+   Thread_1
+     Wait: 60.0
+     Recarga≔ True 
+     posicao_tinta≔p[15*PosicaoRecarga/1000,PosicaoRecarga/7*15/1000,0,0,0,0]
+   'Thread_2'

@@ -1,0 +1,39 @@
+ Program
+   Robot Program
+     produtos_caixa≔0
+     var_loop≔0
+     encaixotados≔0
+     Loop
+       Loop var_loop<prod_na_cx
+         Wait DI[0]=HI
+         MoveJ
+           Waypoint_1
+           Call Pick
+         produtos_caixa≔produtos_caixa+1
+         If produtos_caixa≥n_insp
+           MoveJ
+             Waypoint_4
+           Set M_e=On
+           Wait: 0.5
+           Set M_e=Off
+           Popup: Fim da inspecao
+           produtos_caixa≔0
+         Wait DI[1]=HI
+         MoveJ
+           Waypoint_3
+           Call Place
+         var_loop≔var_loop+1
+         encaixotados≔encaixotados+1
+         Set prod_encaixota=encaixotados
+       Set L_e=On
+       Wait: 0.5
+       Set L_e=Off
+       var_loop≔0
+   Place
+     Set open=On
+     Set close=Off
+     Wait: 0.5
+   Pick
+     Set open=Off
+     Set close=On
+     Wait: 0.5

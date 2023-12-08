@@ -1,0 +1,15 @@
+ Program
+   BeforeStart
+     MoveJ
+       Waypoint_2
+       Waypoint_3
+     MoveL
+       Waypoint_1
+     Wait: 5.0
+   Robot Program
+     Wait start≟1
+     escala_mm≔p[0.161*escala,0,0,0,0,0]
+     var_1≔pose_add(p[0,0,0.001,0.04,0.00,0.0],escala_mm)
+     MoveL
+       var_1
+     Wait: 0.01

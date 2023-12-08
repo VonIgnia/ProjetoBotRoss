@@ -141,39 +141,21 @@ def Generate_fillings(img_in,color):
 
     #search for the intersection of lines and the inside region of a contour
     i=0
-    dict_filling_points = {}
+    filling_points = []
     for contour in contours:
         i+=1
-        filling_points = []
-        
         x,y,w,h = cv2.boundingRect(contour)
-        filling_points.append([x,y])
-        filling_points.append([x+w,y])
+        
+        filling_points.append([x,y,60])
+        filling_points.append([x,y,0])
+        filling_points.append([x+w,y,0])
+        filling_points.append([x+w,y,60])
         
         cv2.line(line_image, (x,y), (x+w,y), (255,255,255), 1) 
-
-        dict_filling_points["Preenchimento{}".format(color)] = filling_points
-
-    Prototipo_lista_preenchimentos = []
-
-    i_atual = 0 #flag para checar se mudou de Contorno{numero do contorno} para Contorno{numero do contorno+1}
-    for i in dict_filling_points: #para cada elemento(contorno(conjunto de pontos [x, y])) no dicionário
-        for j in dict_filling_points[i]: #para cada ponto[x, y] no contorno:
-
-            j = list(np.append(j,0)) # a lista j só contém os valores de x e y, essa linha faz o append de um terceiro valor para representar o eixo z, esse valor sempre é 0
-            if i != i_atual: #se mudou de Contorno{numero do contorno} para Contorno{numero do contorno+1}
-                Prototipo_lista_preenchimentos.append(list(np.add(j,[0,0,60]))) #acrescenta movimento em Z no inicio do contorno para não rabiscar entre contornos
-                i_atual = i
-            Prototipo_lista_preenchimentos.append(j) #acrescenta o ponto [x,y,z] na lista
-        Prototipo_lista_preenchimentos.append(list(np.add(Prototipo_lista_preenchimentos[-1],[0,0,60]))) #acrescenta movimento em Z no fim do contorno para não rabiscar entre contornos
-    
-    #return imagem_binarizada,Prototipo_lista_preenchimentos
-    #i atual representa o numero final de contornos, por isso está aparecendo Preenchimento994 ou Preenchimento1037 (essas coisas)
-    
-    #cv2.imshow("{}".format(i_atual), line_image)
-    
-    #cv2.waitKey(0)
-    return Prototipo_lista_preenchimentos
+        
+    cv2.imshow("{}".format(i), line_image)
+    cv2.waitKey(0)
+    return filling_points
 
 # Function to handle receiving data from UR5
 def receive_data_from_ur5(HOST, PORT_RECEIVE):

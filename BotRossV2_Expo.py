@@ -43,9 +43,9 @@ resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,A4_paisagem)
 
 resized_height, resized_width = resized_image.shape[:2]
 print ("res height: {}; res width: {}".format(resized_height, resized_width))
-cv2.imshow('resized_image',  resized_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+#cv2.imshow('resized_image',  resized_image)
+#cv2.waitKey(0)
+#cv2.destroyAllWindows()
 
 #imagem que o robô irá desenhar:
 #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically

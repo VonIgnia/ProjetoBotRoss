@@ -33,11 +33,19 @@ img_in = cv2.imread(FunctionsV2.select_image(), cv2.IMREAD_COLOR)
 if img_in is None:
     print("File not found. Bye!")
     exit(0)
+height, width = img_in.shape[:2]
+print("height: {}; width: {}".format(height, width))
 
 A4_retrato = (297,210) #dimensões em mm (height, width)
 A4_paisagem = (210,297) #dimensões em mm (height, width)
 
-resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,A4_retrato)
+resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,A4_paisagem)
+
+resized_height, resized_width = resized_image.shape[:2]
+print ("res height: {}; res width: {}".format(resized_height, resized_width))
+cv2.imshow('resized_image',  resized_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 #imagem que o robô irá desenhar:
 #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically

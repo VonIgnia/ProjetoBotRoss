@@ -19,20 +19,14 @@ def select_image():
 
 def resize_keeping_aspect_ratio(img_in,tamanho_folha):
     current_height, current_width = img_in.shape[:2]
-    width = tamanho_folha[0]
-    height = tamanho_folha[1]
+    height = tamanho_folha[0]
+    width = tamanho_folha[1]
 
-    if height>width:
-        width = 0
-    
-    if width>height:
-        height = 0
-
-    if width == 0:
+    if current_height>current_width:  #adjust the height of image to the frame
         # Calculate the ratio based on the desired height
         ratio = height / float(current_height)
-        
-    else:
+
+    elif current_width>current_height: #adjust the width of image to the frame
         # Calculate the ratio based on the desired width
         ratio = width / float(current_width)
 
@@ -44,6 +38,7 @@ def resize_keeping_aspect_ratio(img_in,tamanho_folha):
     #img_v = cv2.flip(hsv_img_in_norm, 0) # flip the image by vertically
     #img_h = cv2.flip(hsv_img_in_norm, 1) # flip the image by horizontally
     #img_vh = cv2.flip(resized_img_in,-1) # flip the image in both axis
+    
     img_out = resized_img_in
     #img_out = cv2.flip(resized_img_in, 1)
     #img_out = cv2.flip(img_out,-1)

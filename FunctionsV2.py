@@ -22,7 +22,7 @@ def resize_keeping_aspect_ratio(img_in,tamanho_folha):
     height = tamanho_folha[0]
     width = tamanho_folha[1]
 
-    if current_height>current_width:  #adjust the height of image to the frame
+    if current_height>=current_width:  #adjust the height of image to the frame
         # Calculate the ratio based on the desired height
         ratio = height / float(current_height)
 
@@ -114,7 +114,7 @@ def Split_Colors(img_in, available_colors_list):
 
 def Generate_fillings(img_in,color):
     height, width = img_in.shape[:2]
-    line_spacing = 2
+    line_spacing = 5
 
     # create a frame
     line_image = np.zeros((height, width), dtype=np.uint8)
@@ -135,8 +135,8 @@ def Generate_fillings(img_in,color):
         x,y,w,h = cv2.boundingRect(contour)
         
         filling_points.append([x,y,60])
-        filling_points.append([x,y,0])
-        filling_points.append([x+w,y,0])
+        filling_points.append([x,y,-5])
+        filling_points.append([x+w,y,-5])
         filling_points.append([x+w,y,60])
         
         cv2.line(line_image, (x,y), (x+w,y), (255,255,255), 1) 

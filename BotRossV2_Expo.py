@@ -38,8 +38,9 @@ print("height: {}; width: {}".format(height, width))
 
 A4_retrato = (297,210) #dimensões em mm (height, width)
 A4_paisagem = (210,297) #dimensões em mm (height, width)
+frame_Expo = (240,180)
 
-resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,A4_paisagem)
+resized_image = FunctionsV2.resize_keeping_aspect_ratio(img_in,frame_Expo)
 
 resized_height, resized_width = resized_image.shape[:2]
 print ("res height: {}; res width: {}".format(resized_height, resized_width))
@@ -53,14 +54,22 @@ print ("res height: {}; res width: {}".format(resized_height, resized_width))
 #img_in_norm_vh = cv2.flip(hsv_resized_image,-1) # flip the image in both axis
 
 #cores + preto e branco
-Rainbow_Pallete =  [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[137,85.5,43.1],[197,70,83.5],
-                           [214, 94.3, 64.7],[326, 71.9, 57.3],[240,80,25],[0,0,10]]
+Rainbow_Pallete =  [[0,0,100],    #branco
+                    #[34,53,88],   #bege/cor de pele
+                    [0,100,80],   #vermelho
+                    [24,100,100], #laranja
+                    [60,100,100], #amarelo
+                    [137,85.5,43.1], #verde
+                    [197,70,83.5],   #azul claro
+                    [326, 71.9, 57.3], #anil
+                    [240,80,25], #violeta
+                    [0,0,10]] #preto
 
 SkinTones_Pallete = [[0,0,100],[0,100,80],[24,100,100],[60,100,100],[34,53,88],[34,68,77],[34,49,99],[137,85.5,43.1],[0,0,10]]
 
 RedGrenBluYe = [[0,0,100],[0,100,80],[60,100,100],[137,85.5,43.1],[197,70,83.5],[0,0,10]]
 
-listaHSV_Cores_Canetas = RedGrenBluYe
+listaHSV_Cores_Canetas = Rainbow_Pallete
 #listaHSV_Cores_Canetas = SkinTones_Pallete
 
 #lista reduzida para testes (cores quentes)
